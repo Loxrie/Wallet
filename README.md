@@ -1,5 +1,5 @@
 # Wallet
-Wallet is solution to keeping track of your finances.
+Wallet is a solution to keeping track of your finances.
 
 The images below are mockups done in Sketch.
 ![bank account design](images/Bank Account.png)
