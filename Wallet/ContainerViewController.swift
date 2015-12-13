@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ContainerViewController.swift
 //  Wallet
 //
 //  Created by Duff Neubauer on 10/18/15.
@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class ViewController: NSViewController {
+class ContainerViewController: NSViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
