@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.automator.AutomatorPalette" version="9060"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -59,9 +60,9 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="bib-Uj-vzu">
                                     <items>
-                                        <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
+                                        <menuItem title="New Bank Account" keyEquivalent="n" id="Was-JA-tGl" userLabel="New Bank Account">
                                             <connections>
-                                                <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
+                                                <action selector="newBankAccount:" target="Ady-hI-5gd" id="e01-bu-Sbi"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
@@ -677,7 +678,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                 <animations/>
                                 <connections>
-                                    <segue destination="GVg-XC-zlI" kind="embed" id="bx6-E1-Avq"/>
+                                    <segue destination="GVg-XC-zlI" kind="embed" id="KLy-TE-HVs"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -697,9 +698,9 @@
         <!--Split View Controller-->
         <scene sceneID="LNS-lI-xVE">
             <objects>
-                <splitViewController id="GVg-XC-zlI" sceneMemberID="viewController">
+                <splitViewController id="GVg-XC-zlI" customClass="SplitViewController" customModule="Wallet" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
-                        <splitViewItem id="nza-HI-SSf"/>
+                        <splitViewItem holdingPriority="255" behavior="contentList" id="nza-HI-SSf"/>
                         <splitViewItem id="Vld-rV-kEx"/>
                     </splitViewItems>
                     <splitView key="splitView" dividerStyle="thin" vertical="YES" id="WVb-wB-DG4">
@@ -714,24 +715,24 @@
                 </splitViewController>
                 <customObject id="ygs-rl-xkt" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="1070"/>
+            <point key="canvasLocation" x="28" y="1073"/>
         </scene>
-        <!--View Controller-->
+        <!--Source List View Controller-->
         <scene sceneID="IoT-Fd-9xj">
             <objects>
-                <viewController id="atb-cL-k0L" sceneMemberID="viewController">
+                <viewController id="atb-cL-k0L" customClass="SourceListViewController" customModule="Wallet" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="88P-eM-BZ1">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <scrollView autohidesScrollers="YES" horizontalLineScroll="26" horizontalPageScroll="10" verticalLineScroll="26" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lMM-rp-BcW">
+                            <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lMM-rp-BcW">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                                 <clipView key="contentView" drawsBackground="NO" id="ewG-7g-x2P">
                                     <rect key="frame" x="1" y="1" width="448" height="298"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="uMK-iD-MvU" id="NoX-pU-XcU">
-                                            <rect key="frame" x="0.0" y="0.0" width="448" height="298"/>
+                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="uMK-iD-MvU" id="NoX-pU-XcU">
+                                            <rect key="frame" x="0.0" y="0.0" width="448" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <animations/>
                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -798,6 +799,10 @@
                                                     </prototypeCellViews>
                                                 </tableColumn>
                                             </tableColumns>
+                                            <connections>
+                                                <outlet property="dataSource" destination="atb-cL-k0L" id="l3f-mw-kRd"/>
+                                                <outlet property="delegate" destination="atb-cL-k0L" id="zq9-0O-bFt"/>
+                                            </connections>
                                         </outlineView>
                                     </subviews>
                                     <animations/>
@@ -824,6 +829,9 @@
                         </constraints>
                         <animations/>
                     </view>
+                    <connections>
+                        <outlet property="outlineView" destination="NoX-pU-XcU" id="9zO-sy-FEx"/>
+                    </connections>
                 </viewController>
                 <customObject id="rLq-VC-Wy3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -842,6 +850,226 @@
                 <customObject id="j3l-by-QNS" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="758" y="1241"/>
+        </scene>
+        <!--New Bank Account View Controller-->
+        <scene sceneID="83a-4x-e8d">
+            <objects>
+                <viewController id="E1t-sg-9Kh" customClass="NewBankAccountViewController" customModule="Wallet" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="rCa-6T-Gvk">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="162"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0S8-NW-ZfP">
+                                <rect key="frame" x="18" y="121" width="105" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="17" id="fcc-ib-Fv0"/>
+                                    <constraint firstAttribute="width" constant="101" id="nY7-JE-B2H"/>
+                                </constraints>
+                                <animations/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account name:" id="Zii-aR-dLS">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kqX-CM-k5S">
+                                <rect key="frame" x="129" y="116" width="301" height="26"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="26" id="6d0-A4-maF"/>
+                                </constraints>
+                                <animations/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" bezelStyle="round" id="8em-Or-7sr">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XGs-8w-eRT">
+                                <rect key="frame" x="355" y="13" width="81" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="69" id="JZL-vD-xgF"/>
+                                    <constraint firstAttribute="height" constant="21" id="ZyA-gA-I7j"/>
+                                </constraints>
+                                <animations/>
+                                <buttonCell key="cell" type="push" title="Create" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YEX-XP-W3H">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="createBankAccount:" target="E1t-sg-9Kh" id="fve-bH-ppB"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4rF-g3-j1s">
+                                <rect key="frame" x="14" y="13" width="81" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="69" id="69Q-oh-tOk"/>
+                                    <constraint firstAttribute="height" constant="21" id="FtT-z9-gpz"/>
+                                </constraints>
+                                <animations/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6J9-jH-1mg">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancel:" target="E1t-sg-9Kh" id="OO9-ed-8sC"/>
+                                </connections>
+                            </button>
+                            <amPathPopUpButton verticalHuggingPriority="750" placeholder="No Selection" translatesAutoresizingMaskIntoConstraints="NO" id="oBB-Zs-ptw">
+                                <rect key="frame" x="127" y="80" width="306" height="26"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="YqK-7N-QOc"/>
+                                </constraints>
+                                <animations/>
+                                <amVariablePopUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="tBj-o9-gY3">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <menu key="menu" title="OtherViews" id="qBo-tW-Mma"/>
+                                </amVariablePopUpButtonCell>
+                            </amPathPopUpButton>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LV6-EY-Cua">
+                                <rect key="frame" x="18" y="85" width="105" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="17" id="v3W-OY-GmH"/>
+                                    <constraint firstAttribute="width" constant="101" id="wqF-Xa-Hj7"/>
+                                </constraints>
+                                <animations/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Bank Statement:" id="J5z-PV-UMH">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="4rF-g3-j1s" firstAttribute="leading" secondItem="rCa-6T-Gvk" secondAttribute="leading" constant="20" id="9Sl-PO-aTg"/>
+                            <constraint firstItem="0S8-NW-ZfP" firstAttribute="leading" secondItem="rCa-6T-Gvk" secondAttribute="leading" constant="20" id="J9I-Ma-k6k"/>
+                            <constraint firstItem="LV6-EY-Cua" firstAttribute="leading" secondItem="rCa-6T-Gvk" secondAttribute="leading" constant="20" id="JaA-nO-ELq"/>
+                            <constraint firstItem="kqX-CM-k5S" firstAttribute="top" secondItem="rCa-6T-Gvk" secondAttribute="top" constant="20" id="LnI-fv-MCN"/>
+                            <constraint firstItem="oBB-Zs-ptw" firstAttribute="leading" secondItem="LV6-EY-Cua" secondAttribute="trailing" constant="8" id="Mfq-1H-BOm"/>
+                            <constraint firstItem="oBB-Zs-ptw" firstAttribute="centerY" secondItem="LV6-EY-Cua" secondAttribute="centerY" id="Yb2-xS-Zgs"/>
+                            <constraint firstItem="kqX-CM-k5S" firstAttribute="centerY" secondItem="0S8-NW-ZfP" secondAttribute="centerY" id="bwJ-Eb-Rir"/>
+                            <constraint firstAttribute="trailing" secondItem="kqX-CM-k5S" secondAttribute="trailing" constant="20" id="ehv-7f-fP4"/>
+                            <constraint firstAttribute="trailing" secondItem="oBB-Zs-ptw" secondAttribute="trailing" constant="20" id="mQe-SW-xQR"/>
+                            <constraint firstAttribute="trailing" secondItem="XGs-8w-eRT" secondAttribute="trailing" constant="20" id="nO8-Fi-ycR"/>
+                            <constraint firstItem="oBB-Zs-ptw" firstAttribute="top" secondItem="kqX-CM-k5S" secondAttribute="bottom" constant="12" id="rRe-En-dXf"/>
+                            <constraint firstItem="kqX-CM-k5S" firstAttribute="leading" secondItem="0S8-NW-ZfP" secondAttribute="trailing" constant="8" id="rSc-hx-E3X"/>
+                            <constraint firstAttribute="bottom" secondItem="XGs-8w-eRT" secondAttribute="bottom" constant="20" id="s3c-a3-bUh"/>
+                            <constraint firstAttribute="bottom" secondItem="4rF-g3-j1s" secondAttribute="bottom" constant="20" id="vY0-5j-Dgj"/>
+                        </constraints>
+                        <animations/>
+                    </view>
+                    <connections>
+                        <outlet property="accountNameField" destination="kqX-CM-k5S" id="p9c-VW-Pbm"/>
+                    </connections>
+                </viewController>
+                <customObject id="XEx-sg-K71" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="746" y="196"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="Uhn-8w-auG">
+            <objects>
+                <viewController storyboardIdentifier="ONE" id="eVc-NL-B8L" sceneMemberID="viewController">
+                    <view key="view" id="lXa-IF-00C">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rjU-lf-qqO">
+                                <rect key="frame" x="209" y="142" width="32" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="17" id="H1i-0a-G0n"/>
+                                    <constraint firstAttribute="width" constant="28" id="wd9-PN-r4Y"/>
+                                </constraints>
+                                <animations/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="ONE" id="mpc-D9-97X">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="rjU-lf-qqO" firstAttribute="centerX" secondItem="lXa-IF-00C" secondAttribute="centerX" id="7y4-mg-PPv"/>
+                            <constraint firstItem="rjU-lf-qqO" firstAttribute="centerY" secondItem="lXa-IF-00C" secondAttribute="centerY" id="Jkw-12-1g4"/>
+                        </constraints>
+                        <animations/>
+                    </view>
+                </viewController>
+                <customObject id="Rfq-Gd-y6u" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1260" y="1241"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="v6P-9A-C0X">
+            <objects>
+                <viewController storyboardIdentifier="TWO" id="hxx-kw-O0r" sceneMemberID="viewController">
+                    <view key="view" id="uYx-Ou-mO7">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rB3-wM-3he">
+                                <rect key="frame" x="208" y="142" width="35" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="31" id="pT6-Dc-gr0"/>
+                                    <constraint firstAttribute="height" constant="17" id="paa-rt-0d6"/>
+                                </constraints>
+                                <animations/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="TWO" id="fs5-V1-RFg">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="rB3-wM-3he" firstAttribute="centerY" secondItem="uYx-Ou-mO7" secondAttribute="centerY" id="IwW-lX-m8h"/>
+                            <constraint firstItem="rB3-wM-3he" firstAttribute="centerX" secondItem="uYx-Ou-mO7" secondAttribute="centerX" id="j8H-Ki-Xtr"/>
+                        </constraints>
+                        <animations/>
+                    </view>
+                </viewController>
+                <customObject id="oYW-7M-hxq" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1768" y="1241"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="yN0-Gq-aDE">
+            <objects>
+                <viewController storyboardIdentifier="THREE" id="ckU-Qh-EYY" sceneMemberID="viewController">
+                    <view key="view" id="DSp-UF-c2R">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KCW-b9-uhC">
+                                <rect key="frame" x="202" y="142" width="46" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="42" id="Bh1-bg-SIy"/>
+                                    <constraint firstAttribute="height" constant="17" id="OlZ-pM-1xY"/>
+                                </constraints>
+                                <animations/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="THREE" id="jcg-zp-jSH">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="KCW-b9-uhC" firstAttribute="centerY" secondItem="DSp-UF-c2R" secondAttribute="centerY" id="E9b-xy-DsF"/>
+                            <constraint firstItem="KCW-b9-uhC" firstAttribute="centerX" secondItem="DSp-UF-c2R" secondAttribute="centerX" id="kpd-YV-b9M"/>
+                        </constraints>
+                        <animations/>
+                    </view>
+                </viewController>
+                <customObject id="97r-Yx-5eV" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2260" y="1241"/>
         </scene>
     </scenes>
     <resources>
