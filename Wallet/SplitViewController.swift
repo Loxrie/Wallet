@@ -14,6 +14,7 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
   let oneViewControllerID   = "ONE"
   let twoViewControllerID   = "TWO"
   let threeViewControllerID = "THREE"
+  let budgetViewController  = "BudgetViewController"
   
   lazy var openPanel: NSOpenPanel = {
     let panel = NSOpenPanel()
@@ -66,8 +67,19 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
     
     numbers.children = [one, two, three]
     
-    self.sourceListViewController().sourceItems = [numbers]
+    let budget  = SourceListItem(title: "Budgets", asGroupItem: true)
+    
+    let monthly = SourceListItem(title: "Budget", asGroupItem: false)
+    monthly.viewController = self.storyboard?.instantiateControllerWithIdentifier(self.budgetViewController) as? BudgetViewController
+    
+    budget.children = [monthly]
+    
+    self.sourceListViewController().sourceItems = [numbers, budget]
     self.sourceListViewController().refresh()
+    
+    // Select the view we are testing
+    let index = self.sourceListViewController().outlineView.rowForItem(monthly)
+    self.sourceListViewController().outlineView.selectRowIndexes(NSIndexSet(index: index), byExtendingSelection: false)
   }
 
   // MARK: - IBActions

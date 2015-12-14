@@ -16,6 +16,10 @@
 		179094CB1C1E196300C1A09E /* SourceListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094CA1C1E196300C1A09E /* SourceListItem.swift */; };
 		179094CE1C1E2A6500C1A09E /* NewBankAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094CD1C1E2A6500C1A09E /* NewBankAccountViewController.swift */; };
 		179094D01C1E2ED700C1A09E /* Automator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 179094CF1C1E2ED700C1A09E /* Automator.framework */; };
+		179094D51C1E39E600C1A09E /* BudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094D41C1E39E600C1A09E /* BudgetViewController.swift */; };
+		179094D71C1E40C400C1A09E /* BudgetCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094D61C1E40C400C1A09E /* BudgetCategory.swift */; };
+		179094D91C1E46FC00C1A09E /* BudgetTableCellViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094D81C1E46FC00C1A09E /* BudgetTableCellViews.swift */; };
+		179094DB1C1E61CF00C1A09E /* ActualBudgetView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 179094DA1C1E61CF00C1A09E /* ActualBudgetView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +34,10 @@
 		179094CA1C1E196300C1A09E /* SourceListItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SourceListItem.swift; sourceTree = "<group>"; };
 		179094CD1C1E2A6500C1A09E /* NewBankAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewBankAccountViewController.swift; sourceTree = "<group>"; };
 		179094CF1C1E2ED700C1A09E /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = System/Library/Frameworks/Automator.framework; sourceTree = SDKROOT; };
+		179094D41C1E39E600C1A09E /* BudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetViewController.swift; sourceTree = "<group>"; };
+		179094D61C1E40C400C1A09E /* BudgetCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetCategory.swift; sourceTree = "<group>"; };
+		179094D81C1E46FC00C1A09E /* BudgetTableCellViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetTableCellViews.swift; sourceTree = "<group>"; };
+		179094DA1C1E61CF00C1A09E /* ActualBudgetView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActualBudgetView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +76,7 @@
 				175D43601BD40E0F0002F971 /* ContainerViewController.swift */,
 				179094C41C1E170100C1A09E /* SplitViewController.swift */,
 				179094CD1C1E2A6500C1A09E /* NewBankAccountViewController.swift */,
+				179094D31C1E39D200C1A09E /* Budget */,
 				179094CC1C1E29FA00C1A09E /* Sidebar */,
 				175D43621BD40E0F0002F971 /* Assets.xcassets */,
 				175D43641BD40E0F0002F971 /* Main.storyboard */,
@@ -83,6 +92,17 @@
 				179094CA1C1E196300C1A09E /* SourceListItem.swift */,
 			);
 			name = Sidebar;
+			sourceTree = "<group>";
+		};
+		179094D31C1E39D200C1A09E /* Budget */ = {
+			isa = PBXGroup;
+			children = (
+				179094D41C1E39E600C1A09E /* BudgetViewController.swift */,
+				179094D61C1E40C400C1A09E /* BudgetCategory.swift */,
+				179094D81C1E46FC00C1A09E /* BudgetTableCellViews.swift */,
+				179094DA1C1E61CF00C1A09E /* ActualBudgetView.xib */,
+			);
+			name = Budget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,6 +162,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				179094DB1C1E61CF00C1A09E /* ActualBudgetView.xib in Resources */,
 				175D43631BD40E0F0002F971 /* Assets.xcassets in Resources */,
 				175D43661BD40E0F0002F971 /* Main.storyboard in Resources */,
 			);
@@ -155,6 +176,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				175D43611BD40E0F0002F971 /* ContainerViewController.swift in Sources */,
+				179094D51C1E39E600C1A09E /* BudgetViewController.swift in Sources */,
+				179094D91C1E46FC00C1A09E /* BudgetTableCellViews.swift in Sources */,
+				179094D71C1E40C400C1A09E /* BudgetCategory.swift in Sources */,
 				179094C71C1E173400C1A09E /* SourceListViewController.swift in Sources */,
 				175D435F1BD40E0F0002F971 /* AppDelegate.swift in Sources */,
 				179094CB1C1E196300C1A09E /* SourceListItem.swift in Sources */,
