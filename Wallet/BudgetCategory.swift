@@ -27,7 +27,7 @@ struct BudgetCategory {
   }
   
   static func defaultCategory() -> BudgetCategory {
-    return BudgetCategory(title: "category", goal: NSDecimalNumber(double: 0.0))
+    return BudgetCategory(title: "Category", goal: NSDecimalNumber(double: 0.0))
   }
   
   init(title: String, goal: NSDecimalNumber) {

@@ -65,7 +65,21 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   // MARK: - IBActions
   
   @IBAction func addCategory(sender: NSButton) {
-    let defaultCategory = BudgetCategory.defaultCategory()
+    var defaultCategory = BudgetCategory.defaultCategory()
+    
+    // Check if default category already exists
+    var title       = defaultCategory.title
+    var index       = 0
+    let categories  = self.budgetCategories.map({ $0.title })
+    while categories.contains(title) {
+      var base = title
+      if let range = title.rangeOfString(" \(index)") {
+        base = title.substringToIndex(range.startIndex)
+      }
+      title = "\(base) \(++index)"
+    }
+    
+    defaultCategory.title = title
     self.budgetCategories.append(defaultCategory)
     
     self.tableView.reloadData()
@@ -122,7 +136,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
       return cell
       
     case (ACTUAL, let cell as ActualBudgetTableCellView):
-      let percent = category.actual.decimalNumberByDividingBy(category.goal)
+      let percent = category.goal.floatValue > 0 ? category.actual.decimalNumberByDividingBy(category.goal) : 0.0
       cell.updatePercentFull(CGFloat(percent))
       return cell
       
