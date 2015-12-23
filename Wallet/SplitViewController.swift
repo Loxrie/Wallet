@@ -93,7 +93,6 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
       if response == NSModalResponseOK {
         
         let url = self.openPanel.URLs[0]
-        print("Add bank account from \(url.path!)")
 //        BankAccountManager.sharedManager.addBankAccountFromStatement(url)
 //        self.refreshSourceList()
       }

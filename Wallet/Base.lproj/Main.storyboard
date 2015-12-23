@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10060.2"/>
-        <plugIn identifier="com.apple.automator.AutomatorPalette" version="10060.2"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -835,120 +834,6 @@
                 <customObject id="j3l-by-QNS" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="758" y="1241"/>
-        </scene>
-        <!--New Bank Account View Controller-->
-        <scene sceneID="83a-4x-e8d">
-            <objects>
-                <viewController id="E1t-sg-9Kh" customClass="NewBankAccountViewController" customModule="Wallet" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="rCa-6T-Gvk">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="162"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0S8-NW-ZfP">
-                                <rect key="frame" x="18" y="121" width="105" height="17"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="17" id="fcc-ib-Fv0"/>
-                                    <constraint firstAttribute="width" constant="101" id="nY7-JE-B2H"/>
-                                </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account name:" id="Zii-aR-dLS">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kqX-CM-k5S">
-                                <rect key="frame" x="129" y="116" width="301" height="26"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="26" id="6d0-A4-maF"/>
-                                </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" bezelStyle="round" id="8em-Or-7sr">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XGs-8w-eRT">
-                                <rect key="frame" x="355" y="13" width="81" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="69" id="JZL-vD-xgF"/>
-                                    <constraint firstAttribute="height" constant="21" id="ZyA-gA-I7j"/>
-                                </constraints>
-                                <buttonCell key="cell" type="push" title="Create" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YEX-XP-W3H">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="createBankAccount:" target="E1t-sg-9Kh" id="fve-bH-ppB"/>
-                                </connections>
-                            </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4rF-g3-j1s">
-                                <rect key="frame" x="14" y="13" width="81" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="69" id="69Q-oh-tOk"/>
-                                    <constraint firstAttribute="height" constant="21" id="FtT-z9-gpz"/>
-                                </constraints>
-                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6J9-jH-1mg">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="cancel:" target="E1t-sg-9Kh" id="OO9-ed-8sC"/>
-                                </connections>
-                            </button>
-                            <amPathPopUpButton verticalHuggingPriority="750" placeholder="No Selection" translatesAutoresizingMaskIntoConstraints="NO" id="oBB-Zs-ptw">
-                                <rect key="frame" x="127" y="80" width="306" height="26"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="YqK-7N-QOc"/>
-                                </constraints>
-                                <amVariablePopUpButtonCell key="cell" type="push" title="Desktop" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="1004" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="tBj-o9-gY3">
-                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="qBo-tW-Mma"/>
-                                </amVariablePopUpButtonCell>
-                            </amPathPopUpButton>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LV6-EY-Cua">
-                                <rect key="frame" x="18" y="85" width="105" height="17"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="17" id="v3W-OY-GmH"/>
-                                    <constraint firstAttribute="width" constant="101" id="wqF-Xa-Hj7"/>
-                                </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Bank Statement:" id="J5z-PV-UMH">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                        <constraints>
-                            <constraint firstItem="4rF-g3-j1s" firstAttribute="leading" secondItem="rCa-6T-Gvk" secondAttribute="leading" constant="20" id="9Sl-PO-aTg"/>
-                            <constraint firstItem="0S8-NW-ZfP" firstAttribute="leading" secondItem="rCa-6T-Gvk" secondAttribute="leading" constant="20" id="J9I-Ma-k6k"/>
-                            <constraint firstItem="LV6-EY-Cua" firstAttribute="leading" secondItem="rCa-6T-Gvk" secondAttribute="leading" constant="20" id="JaA-nO-ELq"/>
-                            <constraint firstItem="kqX-CM-k5S" firstAttribute="top" secondItem="rCa-6T-Gvk" secondAttribute="top" constant="20" id="LnI-fv-MCN"/>
-                            <constraint firstItem="oBB-Zs-ptw" firstAttribute="leading" secondItem="LV6-EY-Cua" secondAttribute="trailing" constant="8" id="Mfq-1H-BOm"/>
-                            <constraint firstItem="oBB-Zs-ptw" firstAttribute="centerY" secondItem="LV6-EY-Cua" secondAttribute="centerY" id="Yb2-xS-Zgs"/>
-                            <constraint firstItem="kqX-CM-k5S" firstAttribute="centerY" secondItem="0S8-NW-ZfP" secondAttribute="centerY" id="bwJ-Eb-Rir"/>
-                            <constraint firstAttribute="trailing" secondItem="kqX-CM-k5S" secondAttribute="trailing" constant="20" id="ehv-7f-fP4"/>
-                            <constraint firstAttribute="trailing" secondItem="oBB-Zs-ptw" secondAttribute="trailing" constant="20" id="mQe-SW-xQR"/>
-                            <constraint firstAttribute="trailing" secondItem="XGs-8w-eRT" secondAttribute="trailing" constant="20" id="nO8-Fi-ycR"/>
-                            <constraint firstItem="oBB-Zs-ptw" firstAttribute="top" secondItem="kqX-CM-k5S" secondAttribute="bottom" constant="12" id="rRe-En-dXf"/>
-                            <constraint firstItem="kqX-CM-k5S" firstAttribute="leading" secondItem="0S8-NW-ZfP" secondAttribute="trailing" constant="8" id="rSc-hx-E3X"/>
-                            <constraint firstAttribute="bottom" secondItem="XGs-8w-eRT" secondAttribute="bottom" constant="20" id="s3c-a3-bUh"/>
-                            <constraint firstAttribute="bottom" secondItem="4rF-g3-j1s" secondAttribute="bottom" constant="20" id="vY0-5j-Dgj"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="accountNameField" destination="kqX-CM-k5S" id="p9c-VW-Pbm"/>
-                    </connections>
-                </viewController>
-                <customObject id="XEx-sg-K71" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="746" y="196"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="Uhn-8w-auG">

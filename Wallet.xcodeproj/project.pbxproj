@@ -11,10 +11,11 @@
 		175D43611BD40E0F0002F971 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175D43601BD40E0F0002F971 /* ContainerViewController.swift */; };
 		175D43631BD40E0F0002F971 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 175D43621BD40E0F0002F971 /* Assets.xcassets */; };
 		175D43661BD40E0F0002F971 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 175D43641BD40E0F0002F971 /* Main.storyboard */; };
+		177507AE1C2A2CC900852BB7 /* BankAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177507AD1C2A2CC900852BB7 /* BankAccountManager.swift */; };
+		177507B11C2A2E1E00852BB7 /* BankAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177507B01C2A2E1E00852BB7 /* BankAccount.swift */; };
 		179094C51C1E170100C1A09E /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094C41C1E170100C1A09E /* SplitViewController.swift */; };
 		179094C71C1E173400C1A09E /* SourceListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094C61C1E173400C1A09E /* SourceListViewController.swift */; };
 		179094CB1C1E196300C1A09E /* SourceListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094CA1C1E196300C1A09E /* SourceListItem.swift */; };
-		179094CE1C1E2A6500C1A09E /* NewBankAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094CD1C1E2A6500C1A09E /* NewBankAccountViewController.swift */; };
 		179094D01C1E2ED700C1A09E /* Automator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 179094CF1C1E2ED700C1A09E /* Automator.framework */; };
 		179094D51C1E39E600C1A09E /* BudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094D41C1E39E600C1A09E /* BudgetViewController.swift */; };
 		179094D71C1E40C400C1A09E /* BudgetCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179094D61C1E40C400C1A09E /* BudgetCategory.swift */; };
@@ -29,10 +30,11 @@
 		175D43621BD40E0F0002F971 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		175D43651BD40E0F0002F971 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		175D43671BD40E0F0002F971 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		177507AD1C2A2CC900852BB7 /* BankAccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BankAccountManager.swift; sourceTree = "<group>"; };
+		177507B01C2A2E1E00852BB7 /* BankAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BankAccount.swift; sourceTree = "<group>"; };
 		179094C41C1E170100C1A09E /* SplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
 		179094C61C1E173400C1A09E /* SourceListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SourceListViewController.swift; sourceTree = "<group>"; };
 		179094CA1C1E196300C1A09E /* SourceListItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SourceListItem.swift; sourceTree = "<group>"; };
-		179094CD1C1E2A6500C1A09E /* NewBankAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewBankAccountViewController.swift; sourceTree = "<group>"; };
 		179094CF1C1E2ED700C1A09E /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = System/Library/Frameworks/Automator.framework; sourceTree = SDKROOT; };
 		179094D41C1E39E600C1A09E /* BudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetViewController.swift; sourceTree = "<group>"; };
 		179094D61C1E40C400C1A09E /* BudgetCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetCategory.swift; sourceTree = "<group>"; };
@@ -75,7 +77,7 @@
 				175D435E1BD40E0F0002F971 /* AppDelegate.swift */,
 				175D43601BD40E0F0002F971 /* ContainerViewController.swift */,
 				179094C41C1E170100C1A09E /* SplitViewController.swift */,
-				179094CD1C1E2A6500C1A09E /* NewBankAccountViewController.swift */,
+				177507AF1C2A2CF300852BB7 /* Bank Account */,
 				179094D31C1E39D200C1A09E /* Budget */,
 				179094CC1C1E29FA00C1A09E /* Sidebar */,
 				175D43621BD40E0F0002F971 /* Assets.xcassets */,
@@ -83,6 +85,15 @@
 				175D43671BD40E0F0002F971 /* Info.plist */,
 			);
 			path = Wallet;
+			sourceTree = "<group>";
+		};
+		177507AF1C2A2CF300852BB7 /* Bank Account */ = {
+			isa = PBXGroup;
+			children = (
+				177507AD1C2A2CC900852BB7 /* BankAccountManager.swift */,
+				177507B01C2A2E1E00852BB7 /* BankAccount.swift */,
+			);
+			name = "Bank Account";
 			sourceTree = "<group>";
 		};
 		179094CC1C1E29FA00C1A09E /* Sidebar */ = {
@@ -182,8 +193,9 @@
 				179094C71C1E173400C1A09E /* SourceListViewController.swift in Sources */,
 				175D435F1BD40E0F0002F971 /* AppDelegate.swift in Sources */,
 				179094CB1C1E196300C1A09E /* SourceListItem.swift in Sources */,
+				177507B11C2A2E1E00852BB7 /* BankAccount.swift in Sources */,
 				179094C51C1E170100C1A09E /* SplitViewController.swift in Sources */,
-				179094CE1C1E2A6500C1A09E /* NewBankAccountViewController.swift in Sources */,
+				177507AE1C2A2CC900852BB7 /* BankAccountManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
