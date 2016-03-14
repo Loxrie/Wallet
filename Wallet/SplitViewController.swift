@@ -27,26 +27,9 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
     return panel
   }()
   
-  //----------------------------------------------------------------------------------------
-  // sourceListViewController()
-  //----------------------------------------------------------------------------------------
-  func sourceListViewController() -> SourceListViewController {
-    let leftSplitViewItem = self.splitViewItems[0]
-    let sourceListVC      = leftSplitViewItem.viewController as! SourceListViewController
-    sourceListVC.delegate = self
-    
-    return sourceListVC
-  }
-  
-  //----------------------------------------------------------------------------------------
-  // detailViewController()
-  //----------------------------------------------------------------------------------------
-  func detailViewController() -> NSViewController {
-    let rightSplitViewItem = self.splitViewItems[1]
-    return rightSplitViewItem.viewController
-  }
-  
+  //========================================================================================
   // MARK: - Lifecycle
+  //========================================================================================
   
   //----------------------------------------------------------------------------------------
   // viewDidLoad()
@@ -54,27 +37,12 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Set up source list
-    let numbers = SourceListItem(title: "Numbers", asGroupItem: true)
-    
-    let one     = SourceListItem(title: "One", asGroupItem: false)
-    let two     = SourceListItem(title: "Two", asGroupItem: false)
-    let three   = SourceListItem(title: "Three", asGroupItem: false)
-    
-    one.viewController    = self.storyboard?.instantiateControllerWithIdentifier(self.oneViewControllerID) as? NSViewController
-    two.viewController    = self.storyboard?.instantiateControllerWithIdentifier(self.twoViewControllerID) as? NSViewController
-    three.viewController  = self.storyboard?.instantiateControllerWithIdentifier(self.threeViewControllerID) as? NSViewController
-    
-    numbers.children = [one, two, three]
-    
-    let budget  = SourceListItem(title: "Budgets", asGroupItem: true)
-    
+    // Budget
+    let budget = self.sourceListViewController().budgetSourceListItem()
     let monthly = SourceListItem(title: "Budget", asGroupItem: false)
     monthly.viewController = self.storyboard?.instantiateControllerWithIdentifier(self.budgetViewController) as? BudgetViewController
-    
     budget.children = [monthly]
-    
-    self.sourceListViewController().sourceItems = [numbers, budget]
+
     self.sourceListViewController().refresh()
     
     // Select the view we are testing
@@ -82,7 +50,9 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
     self.sourceListViewController().outlineView.selectRowIndexes(NSIndexSet(index: index), byExtendingSelection: false)
   }
 
+  //========================================================================================
   // MARK: - IBActions
+  //========================================================================================
   
   //----------------------------------------------------------------------------------------
   // newBankAccount(sender:)
@@ -93,13 +63,45 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
       if response == NSModalResponseOK {
         
         let url = self.openPanel.URLs[0]
-//        BankAccountManager.sharedManager.addBankAccountFromStatement(url)
-//        self.refreshSourceList()
+        guard let bankAccount = BankAccount(statement: url) else { return }
+        
+        if let existingAccount = BankAccountManager.sharedManager.bankAccountWithAccountNumber(bankAccount.accountNumber) {
+          BankAccountManager.sharedManager.updateBankAccount(existingAccount, newAccount: bankAccount)
+          self.detailViewController().childViewControllers.first?.viewWillAppear()
+        } else {
+          BankAccountManager.sharedManager.addbankAccount(bankAccount)
+          self.sourceListViewController().refresh()
+        }
       }
     })
   }
   
+  //========================================================================================
+  // MARK: - Private Methods
+  //========================================================================================
+  
+  //----------------------------------------------------------------------------------------
+  // sourceListViewController()
+  //----------------------------------------------------------------------------------------
+  private func sourceListViewController() -> WalletSourceListViewController {
+    let leftSplitViewItem = self.splitViewItems[0]
+    let sourceListVC      = leftSplitViewItem.viewController as! WalletSourceListViewController
+    sourceListVC.delegate = self
+    
+    return sourceListVC
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // detailViewController()
+  //----------------------------------------------------------------------------------------
+  private func detailViewController() -> NSViewController {
+    let rightSplitViewItem = self.splitViewItems[1]
+    return rightSplitViewItem.viewController
+  }
+  
+  //========================================================================================
   // MARK: - SourceListViewControllerDelegate
+  //========================================================================================
 
   //----------------------------------------------------------------------------------------
   // displayViewController(viewController:)

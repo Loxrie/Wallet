@@ -10,17 +10,13 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-
-
-
-  func applicationDidFinishLaunching(aNotification: NSNotification) {
-    // Insert code here to initialize your application
+  
+  //----------------------------------------------------------------------------------------
+  // applicationWillTerminate(notification:)
+  //----------------------------------------------------------------------------------------
+  func applicationWillTerminate(notification: NSNotification) {
+    BankAccountManager.sharedManager.save()
+    BudgetCategoryManager.sharedManager.save()
   }
-
-  func applicationWillTerminate(aNotification: NSNotification) {
-    // Insert code here to tear down your application
-  }
-
-
 }
 

@@ -104,11 +104,11 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
     var cell: NSTableCellView? = nil
     if sourceItem.isGroupItem {
       cell = outlineView.makeViewWithIdentifier("HeaderCell", owner: self) as? NSTableCellView
+      cell?.textField?.stringValue = sourceItem.title.uppercaseString
     } else {
       cell = outlineView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView
+      cell?.textField?.stringValue = sourceItem.title.capitalizedString
     }
-    
-    cell?.textField?.stringValue = sourceItem.title
     
     return cell
   }

@@ -40,9 +40,12 @@ class ActualBudgetTableCellView: NSTableCellView {
 
 class ActualBudgetView: NSView {
   
-  private let grayColor = NSColor(white: 0.60, alpha: 1.0).CGColor
-  private let redColor  = NSColor(red: 1.00, green: 0.54, blue: 0.51, alpha: 1.0).CGColor
-  private let blueColor = NSColor(red: 0.60, green: 0.75, blue: 0.92, alpha: 1.0).CGColor
+  private let grayColor   = NSColor(white: 0.60, alpha: 1.0).CGColor
+  private let redColor    = NSColor(red: 1.00, green: 0.38, blue: 0.35, alpha: 1.0).CGColor
+  private let blueColor   = NSColor(red: 0.60, green: 0.75, blue: 0.92, alpha: 1.0).CGColor
+  private let greenColor  = NSColor(red: 0.16, green: 0.82, blue: 0.26, alpha: 1.0).CGColor
+  private let yellowColor = NSColor(red: 1.00, green: 0.76, blue: 0.18, alpha: 1.0).CGColor
+  private var percent     = CGFloat(0)
   
   @IBOutlet var view: NSView!
   @IBOutlet weak var topView: NSView!
@@ -88,15 +91,34 @@ class ActualBudgetView: NSView {
     topView.wantsLayer = true
     topView.layer = topLayer
   }
+  
+  override func drawRect(dirtyRect: NSRect) {
+    super.drawRect(dirtyRect)
+    
+    self.drawTopView()
+  }
+
+  func drawTopView() {
+    let width = self.percent * self.frame.size.width
+    self.widthConstraint.constant = width
+    
+    switch self.percent {
+    case let x where x >= 1.0:
+      topView.layer?.backgroundColor = redColor
+    case let x where x >= 0.5:
+      topView.layer?.backgroundColor = yellowColor
+    case let x where x >= 0.0:
+      topView.layer?.backgroundColor = greenColor
+    default:
+      topView.layer?.backgroundColor = grayColor
+    }
+  }
 
   //----------------------------------------------------------------------------------------
   // updateWidth:
   //----------------------------------------------------------------------------------------
   func updateWidth(percent: CGFloat) {
-    let adjPercent  = percent >= 1.0 ? 1.0 : percent
-    let width       = adjPercent * self.frame.size.width
-    self.widthConstraint.constant = width
-    
-    topView.layer?.backgroundColor = adjPercent >= 1.0 ? redColor : grayColor
+    self.percent = percent >= 1.0 ? 1.0 : percent
+    self.drawTopView()
   }
 }

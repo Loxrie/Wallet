@@ -26,60 +26,41 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     return formatter
   }()
   
+  //========================================================================================
   // MARK: - Lifecycle
+  //========================================================================================
   
   //----------------------------------------------------------------------------------------
-  // awakeFromNib
+  // viewDidLoad()
   //----------------------------------------------------------------------------------------
-  override func awakeFromNib() {
+  override func viewDidLoad() {
     
     // Set background to white
     let layer = CALayer()
     layer.backgroundColor = NSColor.whiteColor().CGColor
     self.view.wantsLayer = true
     self.view.layer = layer
+    
+    // TableView
+    tableView.allowsMultipleSelection = true
   }
   
   override func viewWillAppear() {
     super.viewWillAppear()
     
-    self.budgetCategories = [
-      BudgetCategory(title: "Home", goal: NSDecimalNumber(double: 250.0)),
-      BudgetCategory(title: "Groceries", goal: NSDecimalNumber(double: 400.0)),
-      BudgetCategory(title: "Food", goal: NSDecimalNumber(double: 100.0)),
-      BudgetCategory(title: "Date Night", goal: NSDecimalNumber(double: 100.0)),
-      BudgetCategory(title: "Personal Items", goal: NSDecimalNumber(double: 200.0)),
-      BudgetCategory(title: "Other", goal: NSDecimalNumber(double: 50.0))
-    ]
+    self.budgetCategories = BudgetCategoryManager.sharedManager.updatedCategories()
     
-    self.budgetCategories[0].actual = NSDecimalNumber(double: 75.0)
-    self.budgetCategories[1].actual = NSDecimalNumber(double: 370.0)
-    self.budgetCategories[2].actual = NSDecimalNumber(double: 50.0)
-    self.budgetCategories[3].actual = NSDecimalNumber(double: 63.0)
-    self.budgetCategories[4].actual = NSDecimalNumber(double: 282.0)
-    self.budgetCategories[5].actual = NSDecimalNumber(double: 10.0)
+    self.budgetCategories.forEach({ print($0) })
     
     self.tableView.reloadData()
   }
   
+  //========================================================================================
   // MARK: - IBActions
+  //========================================================================================
   
   @IBAction func addCategory(sender: NSButton) {
-    var defaultCategory = BudgetCategory.defaultCategory()
-    
-    // Check if default category already exists
-    var title       = defaultCategory.title
-    var index       = 0
-    let categories  = self.budgetCategories.map({ $0.title })
-    while categories.contains(title) {
-      var base = title
-      if let range = title.rangeOfString(" \(index)") {
-        base = title.substringToIndex(range.startIndex)
-      }
-      title = "\(base) \(++index)"
-    }
-    
-    defaultCategory.title = title
+    let defaultCategory = BudgetCategoryManager.sharedManager.newCategory()
     self.budgetCategories.append(defaultCategory)
     
     self.tableView.reloadData()
@@ -90,8 +71,12 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     guard 0 ..< self.budgetCategories.count ~= row,
           let rowView = self.tableView.rowViewAtRow(row, makeIfNecessary: false) else { return }
     
+    let oldTitle = budgetCategories[row].title
     let newTitle = sender.stringValue.capitalizedString
-    self.budgetCategories[row].title = newTitle
+    let category = BudgetCategoryManager.sharedManager.changeTitleOfCategory(oldTitle, to: newTitle)
+    if category != nil {
+      budgetCategories[row] = category!
+    }
     
     // Redraw row
     let range = NSMakeRange(0, rowView.numberOfColumns)
@@ -113,7 +98,9 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     self.tableView.reloadDataForRowIndexes(NSIndexSet(index: row), columnIndexes: columnIndexSet)
   }
   
+  //========================================================================================
   // MARK: - NSTableViewDelegate / NSTableViewDataSource
+  //========================================================================================
   
   //----------------------------------------------------------------------------------------
   // numberOfRowsInTableView(tableView:) -> Int
@@ -122,6 +109,9 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     return self.budgetCategories.count
   }
   
+  //----------------------------------------------------------------------------------------
+  // tableView(tableView:viewForTableColumn:row:) -> NSView?
+  //----------------------------------------------------------------------------------------
   func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
     guard let columnID  = tableColumn?.identifier,
           let view      = tableView.makeViewWithIdentifier(columnID, owner: self)
@@ -136,7 +126,12 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
       return cell
       
     case (ACTUAL, let cell as ActualBudgetTableCellView):
-      let percent = category.goal.floatValue > 0 ? category.actual.decimalNumberByDividingBy(category.goal) : 0.0
+      var percent: Float = 0.0
+      if category.goal.floatValue != 0 {
+        percent = category.actual.decimalNumberByDividingBy(category.goal).floatValue
+      } else if category.goal.floatValue == 0 && category.actual.floatValue > 0 {
+        percent = 100.0
+      }
       cell.updatePercentFull(CGFloat(percent))
       return cell
       
@@ -151,5 +146,25 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     default:
       return view
     }
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // keyDown(theEvent:)
+  //----------------------------------------------------------------------------------------
+  /// If the backspace button is pressed when rows are selected, then we
+  /// will delete those category objects
+  override func keyDown(theEvent: NSEvent) {
+    guard let key = (theEvent.charactersIgnoringModifiers as NSString?)?.characterAtIndex(0)
+          where Int(key) == NSDeleteCharacter else {
+            return
+    }
+    
+    let selectedIndexes = tableView.selectedRowIndexes
+    selectedIndexes.reverse().forEach { (rowIndex) in
+      BudgetCategoryManager.sharedManager.removeCategory(budgetCategories[rowIndex])
+      budgetCategories.removeAtIndex(rowIndex)
+    }
+    
+    tableView.removeRowsAtIndexes(selectedIndexes, withAnimation: NSTableViewAnimationOptions.EffectFade)
   }
 }
