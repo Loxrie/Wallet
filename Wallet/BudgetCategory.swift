@@ -28,7 +28,7 @@ struct BudgetCategoryManager {
   
   func updatedCategories() -> [BudgetCategory] {
     // Get all transactions
-    let allAccounts = BankAccountManager.sharedManager.allAccounts()
+    let allAccounts = AccountManager.sharedManager.allAccounts()
     var allTransactions: [Transaction] = []
     allAccounts.forEach({ $0.postedTransactions().forEach({ allTransactions.append($0) }) })
     
@@ -56,7 +56,7 @@ struct BudgetCategoryManager {
     budgetCategories.removeValueForKey(category.title)
     
     // Reset transactions whose category matches this one
-    let allAccounts = BankAccountManager.sharedManager.allAccounts()
+    let allAccounts = AccountManager.sharedManager.allAccounts()
     var allTransactions: [Transaction] = []
     allAccounts.forEach({ $0.postedTransactions().forEach({ allTransactions.append($0) }) })
     allTransactions.forEach { (transaction) in
@@ -156,7 +156,7 @@ struct BudgetCategoryManager {
     budgetCategories[toTitle] = category
     
     // Adjust transactions
-    let allAccounts = BankAccountManager.sharedManager.allAccounts()
+    let allAccounts = AccountManager.sharedManager.allAccounts()
     var allTransactions: [Transaction] = []
     allAccounts.forEach({ $0.postedTransactions().forEach({ allTransactions.append($0) }) })
     allTransactions.forEach { (transaction) in

@@ -63,13 +63,13 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
       if response == NSModalResponseOK {
         
         let url = self.openPanel.URLs[0]
-        guard let bankAccount = BankAccount(statement: url) else { return }
+        guard let account = Account(statement: url) else { return }
         
-        if let existingAccount = BankAccountManager.sharedManager.bankAccountWithAccountNumber(bankAccount.accountNumber) {
-          BankAccountManager.sharedManager.updateBankAccount(existingAccount, newAccount: bankAccount)
+        if let existingAccount = AccountManager.sharedManager.accountWithAccountNumber(account.accountNumber) {
+          AccountManager.sharedManager.updateAccount(existingAccount, newAccount: account)
           self.detailViewController().childViewControllers.first?.viewWillAppear()
         } else {
-          BankAccountManager.sharedManager.addbankAccount(bankAccount)
+          AccountManager.sharedManager.addAccount(account)
           self.sourceListViewController().refresh()
         }
       }

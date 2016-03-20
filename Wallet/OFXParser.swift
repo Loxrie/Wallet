@@ -13,25 +13,35 @@ import Foundation
 //========================================================================================
 private struct OFXTags {
   
-  struct BankInfo {
+  struct FIInfo {
     static let Base           = "FI"
-    static let BankOrg        = "ORG"
-    static let BankOrgID      = "FID"
+    static let Org            = "ORG"
+    static let OrgID          = "FID"
   }
   
-  struct StatementResponse {
+  struct BankStatementResponse {
     static let Base           = "STMTRS"
     static let Currency       = "CURDEF"
   }
   
-  struct AccountInfo {
+  struct BankAccountInfo {
     static let Base           = "BANKACCTFROM"
     static let RoutingNumber  = "BANKID"
     static let AccountNumber  = "ACCTID"
     static let AccountType    = "ACCTTYPE"
   }
   
-  struct BankTransactions {
+  struct CreditStatementResponse {
+    static let Base           = "CCSTMTRS"
+    static let Currency       = "CURDEF"
+  }
+  
+  struct CreditAccountInfo {
+    static let Base           = "CCACCTFROM"
+    static let AccountNumber  = "ACCTID"
+  }
+  
+  struct Transactions {
     static let Base           = "BANKTRANLIST"
     static let Transaction    = "STMTTRN"
     static let Type           = "TRNTYPE"
@@ -63,8 +73,12 @@ private struct OFXTags {
 struct OFXParser {
   let contents: String
   
-  enum BankAccountInfo {
-    case Org, ID, Currency, RoutingNumber, AccountNumber, AccountType, LedgerBalance, AvailableBalance, DateOfBalance
+  enum FinancialInstitutionInfo {
+    case Org
+  }
+  
+  enum AccountInfo {
+    case AccountNumber, AccountType, Currency, LedgerBalance, AvailableBalance, DateOfBalance
   }
   
   enum TransactionInfo {
@@ -97,74 +111,117 @@ struct OFXParser {
   //========================================================================================
   
   //----------------------------------------------------------------------------------------
-  // bankInformation() -> [BankAccountInfo: String]?
+  // financialInstitutionInfo() -> [FinancialInstitutionInfo: String]?
   //----------------------------------------------------------------------------------------
-  func bankInformation() -> [BankAccountInfo: String]? {
-    guard let bankInfo      = self.blocksWithTag(OFXTags.BankInfo.Base, inString: self.contents)?.first,
-          let bankOrg       = self.valueOfTag(OFXTags.BankInfo.BankOrg, inString: bankInfo),
-          let bankID        = self.valueOfTag(OFXTags.BankInfo.BankOrgID, inString: bankInfo),
-      
-          let statement     = self.blocksWithTag(OFXTags.StatementResponse.Base, inString: self.contents)?.first,
-          let currency      = self.valueOfTag(OFXTags.StatementResponse.Currency, inString: statement),
-      
-          let accountInfo   = self.blocksWithTag(OFXTags.AccountInfo.Base, inString: statement)?.first,
-          let routingNum    = self.valueOfTag(OFXTags.AccountInfo.RoutingNumber, inString: accountInfo),
-          let accountNum    = self.valueOfTag(OFXTags.AccountInfo.AccountNumber, inString: accountInfo),
-          let accountType   = self.valueOfTag(OFXTags.AccountInfo.AccountType, inString: accountInfo) else { return nil }
-    
-          let balanceTuple  = self.accountBalance()
-          let ledgerBalance = balanceTuple.0.0
-          let availBalance  = balanceTuple.0.1
-          let dateOfBal     = balanceTuple.1
+  func financialInstitutionInfo() -> [FinancialInstitutionInfo: String]? {
+    guard let FIInfo  = self.blocksWithTag(OFXTags.FIInfo.Base, inString: self.contents)?.first,
+          let FIOrg   = self.valueOfTag(OFXTags.FIInfo.Org, inString: FIInfo) else { return nil }
     
     return [
-      BankAccountInfo.Org:              bankOrg,
-      BankAccountInfo.ID:               bankID,
-      BankAccountInfo.Currency:         currency,
-      BankAccountInfo.RoutingNumber:    routingNum,
-      BankAccountInfo.AccountNumber:    accountNum,
-      BankAccountInfo.AccountType:      accountType,
-      BankAccountInfo.LedgerBalance:    ledgerBalance,
-      BankAccountInfo.AvailableBalance: availBalance,
-      BankAccountInfo.DateOfBalance:    dateOfBal
+      FinancialInstitutionInfo.Org: FIOrg,
     ]
   }
   
   //----------------------------------------------------------------------------------------
-  // bankTransactions() -> [[TransactionInfo: String]]
+  // accountInfo() -> [AccountInfo: String]?
   //----------------------------------------------------------------------------------------
-  func bankTransactions() -> [[TransactionInfo: String]] {
-    guard let transactionsList  = self.blocksWithTag(OFXTags.BankTransactions.Base, inString: self.contents)?.first,
-          let transactions      = self.blocksWithTag(OFXTags.BankTransactions.Transaction, inString: transactionsList) else { return [] }
+  func accountInfo() -> [AccountInfo: String]? {
+    if self.isBankAccount() {
+      return self.bankAccountInfo()
+    }
+    if self.isCreditAccount() {
+      return self.creditAccountInfo()
+    }
+    
+    return nil
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // bankAccountInfo
+  //----------------------------------------------------------------------------------------
+  func bankAccountInfo() -> [AccountInfo: String]? {
+    guard let statement     = self.blocksWithTag(OFXTags.BankStatementResponse.Base, inString: self.contents)?.first,
+          let currency      = self.valueOfTag(OFXTags.BankStatementResponse.Currency, inString: statement),
+          
+          let accountInfo   = self.blocksWithTag(OFXTags.BankAccountInfo.Base, inString: statement)?.first,
+          let accountNum    = self.valueOfTag(OFXTags.BankAccountInfo.AccountNumber, inString: accountInfo),
+          let accountType   = self.valueOfTag(OFXTags.BankAccountInfo.AccountType, inString: accountInfo) else { return nil }
+    
+    let balanceTuple  = self.accountBalance()
+    let ledgerBalance = balanceTuple.0.0
+    let availBalance  = balanceTuple.0.1
+    let dateOfBal     = balanceTuple.1
+    
+    return [
+      AccountInfo.Currency:         currency,
+      AccountInfo.AccountNumber:    accountNum,
+      AccountInfo.AccountType:      accountType,
+      AccountInfo.LedgerBalance:    ledgerBalance,
+      AccountInfo.AvailableBalance: availBalance,
+      AccountInfo.DateOfBalance:    dateOfBal
+    ]
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // creditAccountInfo
+  //----------------------------------------------------------------------------------------
+  func creditAccountInfo() -> [AccountInfo: String]? {
+    guard let statement     = self.blocksWithTag(OFXTags.CreditStatementResponse.Base, inString: self.contents)?.first,
+          let currency      = self.valueOfTag(OFXTags.CreditStatementResponse.Currency, inString: statement),
+          
+          let accountInfo   = self.blocksWithTag(OFXTags.CreditAccountInfo.Base, inString: statement)?.first,
+          let accountNum    = self.valueOfTag(OFXTags.CreditAccountInfo.AccountNumber, inString: accountInfo) else { return nil }
+    
+    let balanceTuple  = self.accountBalance()
+    let ledgerBalance = balanceTuple.0.0
+    let availBalance  = balanceTuple.0.1
+    let dateOfBal     = balanceTuple.1
+    
+    return [
+      AccountInfo.Currency:         currency,
+      AccountInfo.AccountNumber:    accountNum,
+      AccountInfo.AccountType:      "CREDIT",
+      AccountInfo.LedgerBalance:    ledgerBalance,
+      AccountInfo.AvailableBalance: availBalance,
+      AccountInfo.DateOfBalance:    dateOfBal
+    ]
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // transactions() -> [[TransactionInfo: String]]
+  //----------------------------------------------------------------------------------------
+  func transactions() -> [[TransactionInfo: String]] {
+    guard let transactionsList  = self.blocksWithTag(OFXTags.Transactions.Base, inString: self.contents)?.first,
+          let transactions      = self.blocksWithTag(OFXTags.Transactions.Transaction, inString: transactionsList) else { return [] }
     
     return transactions.map {
       var transaction: [TransactionInfo: String] = [:]
       
-      if let type = self.valueOfTag(OFXTags.BankTransactions.Type, inString: $0) {
+      if let type = self.valueOfTag(OFXTags.Transactions.Type, inString: $0) {
         transaction[TransactionInfo.TransactionType] = type
       }
       
-      if let date = self.valueOfTag(OFXTags.BankTransactions.DatePosted, inString: $0) {
+      if let date = self.valueOfTag(OFXTags.Transactions.DatePosted, inString: $0) {
         transaction[TransactionInfo.DatePosted] = date
       }
       
-      if let amount = self.valueOfTag(OFXTags.BankTransactions.Amount, inString: $0) {
+      if let amount = self.valueOfTag(OFXTags.Transactions.Amount, inString: $0) {
         transaction[TransactionInfo.Amount] = amount
       }
       
-      if let ID = self.valueOfTag(OFXTags.BankTransactions.UniqueID, inString: $0) {
+      if let ID = self.valueOfTag(OFXTags.Transactions.UniqueID, inString: $0) {
         transaction[TransactionInfo.UniqueID] = ID
       }
       
-      if let name = self.valueOfTag(OFXTags.BankTransactions.Name, inString: $0) {
+      if let name = self.valueOfTag(OFXTags.Transactions.Name, inString: $0) {
         transaction[TransactionInfo.Name] = name
       }
       
-      if let memo = self.valueOfTag(OFXTags.BankTransactions.Memo, inString: $0) {
+      if let memo = self.valueOfTag(OFXTags.Transactions.Memo, inString: $0) {
         transaction[TransactionInfo.Memo] = memo
       }
       
-      if let checkNum = self.valueOfTag(OFXTags.BankTransactions.CheckNumber, inString: $0) {
+      if let checkNum = self.valueOfTag(OFXTags.Transactions.CheckNumber, inString: $0) {
         transaction[TransactionInfo.CheckNum] = checkNum
       }
       
@@ -174,7 +231,7 @@ struct OFXParser {
   }
   
   //----------------------------------------------------------------------------------------
-  // accountBalance() -> (String, String)
+  // accountBalance() -> ((LedgeBal, AvailableBal), String)
   //----------------------------------------------------------------------------------------
   func accountBalance() -> ((String, String), String) {
     var balance = (("", ""), "")
@@ -190,10 +247,15 @@ struct OFXParser {
       balance.0.1 = availBalance
     }
     
-    if let dateAsOf = self.valueOfTag(OFXTags.AvailableBalance.Date , inString: availBalanceBlock) {
-      let range     = dateAsOf.rangeOfString("\\[[0-9]:[A-Z]{3}\\]", options: .RegularExpressionSearch, range: nil, locale: nil)
-      let stripped  = dateAsOf.substringToIndex(range!.startIndex)
-      balance.1     = stripped
+    if var dateAsOf = self.valueOfTag(OFXTags.AvailableBalance.Date , inString: availBalanceBlock) {
+      // Some dates have timezone info (ex. [0:GMT]) at the end of the string
+      if let range = dateAsOf.rangeOfString("\\[[0-9]:[A-Z]{3}\\]", options: .RegularExpressionSearch, range: nil, locale: nil) {
+        let stripped  = dateAsOf.substringToIndex(range.startIndex)
+        dateAsOf      = stripped
+      }
+      
+      // Strip the time, because we really only care about the date
+      balance.1 = dateAsOf.substringToIndex(dateAsOf.startIndex.advancedBy(8))
     }
     
     return balance
@@ -202,6 +264,20 @@ struct OFXParser {
   //========================================================================================
   // MARK: - Private Methods
   //========================================================================================
+  
+  //----------------------------------------------------------------------------------------
+  // isBankAccount() -> Bool
+  //----------------------------------------------------------------------------------------
+  func isBankAccount() -> Bool {
+    return self.blocksWithTag(OFXTags.BankStatementResponse.Base, inString: self.contents)?.first != nil
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // isCreditAccount() -> Bool
+  //----------------------------------------------------------------------------------------
+  func isCreditAccount() -> Bool {
+    return self.blocksWithTag(OFXTags.CreditStatementResponse.Base, inString: self.contents)?.first != nil
+  }
   
   //----------------------------------------------------------------------------------------
   // blocksWithTag(tag:String, inString string:String) -> [String]?
@@ -227,8 +303,15 @@ struct OFXParser {
   //----------------------------------------------------------------------------------------
   func valueOfTag(tag:String, inString string:String) -> String? {
     guard let matchRange  = string.rangeOfString("<\(tag)>.+", options: .RegularExpressionSearch, range: nil, locale: nil) else { return nil }
-    let tagLength         = "<\(tag)>".characters.count
-    let stringRange       = matchRange.startIndex.advancedBy(tagLength) ..< matchRange.endIndex
+    
+    // If there is a closing tag, don't count it
+    var endIndex = matchRange.endIndex
+    if let closingTagMatch = string.rangeOfString("</\(tag)>", options: .RegularExpressionSearch, range: nil, locale: nil) {
+      endIndex = closingTagMatch.startIndex
+    }
+    
+    let tagLength   = "<\(tag)>".characters.count
+    let stringRange = matchRange.startIndex.advancedBy(tagLength) ..< endIndex
     
     return string.substringWithRange(stringRange)
   }

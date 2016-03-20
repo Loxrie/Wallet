@@ -1,5 +1,5 @@
 //
-//  BankAccountManager.swift
+//  AccountManager.swift
 //  Wallet
 //
 //  Created by Duff Neubauer on 10/18/15.
@@ -8,9 +8,9 @@
 
 import Foundation
 
-struct BankAccountManager {
-  static var sharedManager  = BankAccountManager()
-  private var accounts      = [String: BankAccount]() // [AccountNumber: BankAccount]
+struct AccountManager {
+  static var sharedManager  = AccountManager()
+  private var accounts      = [String: Account]() // [AccountNumber: Account]
   
   //========================================================================================
   // MARK: - Lifecycle
@@ -20,7 +20,7 @@ struct BankAccountManager {
   // init()
   //----------------------------------------------------------------------------------------
   init() {
-    if let accounts = NSKeyedUnarchiver.unarchiveObjectWithFile(self.dataPath()) as? [String: BankAccount] {
+    if let accounts = NSKeyedUnarchiver.unarchiveObjectWithFile(self.dataPath()) as? [String: Account] {
       self.accounts = accounts
     }
   }
@@ -30,30 +30,30 @@ struct BankAccountManager {
   //========================================================================================
   
   //----------------------------------------------------------------------------------------
-  // addbankAccount(bankAccount:)
+  // addAccount(account:)
   //----------------------------------------------------------------------------------------
-  mutating func addbankAccount(bankAccount: BankAccount) {
-    self.accounts[bankAccount.accountNumber] = bankAccount
+  mutating func addAccount(account: Account) {
+    self.accounts[account.accountNumber] = account
   }
   
   //----------------------------------------------------------------------------------------
-  // allAccounts() -> [BankAccount]
+  // allAccounts() -> [Account]
   //----------------------------------------------------------------------------------------
-  func allAccounts() -> [BankAccount] {
+  func allAccounts() -> [Account] {
     return accounts.keys.sort().map({ accounts[$0]! })
   }
   
   //----------------------------------------------------------------------------------------
-  // bankAccountWithAccountNumber(accountNumber:) -> BankAccount?
+  // accountWithAccountNumber(accountNumber:) -> Account?
   //----------------------------------------------------------------------------------------
-  func bankAccountWithAccountNumber(accountNumber: String) -> BankAccount? {
+  func accountWithAccountNumber(accountNumber: String) -> Account? {
     return accounts[accountNumber]
   }
   
   //----------------------------------------------------------------------------------------
-  // updateBankAccount(accountToUpdate:newAccount:) -> Bool
+  // updateAccount(accountToUpdate:newAccount:) -> Bool
   //----------------------------------------------------------------------------------------
-  mutating func updateBankAccount(accountToUpdate: BankAccount, newAccount: BankAccount) -> Bool {
+  mutating func updateAccount(accountToUpdate: Account, newAccount: Account) -> Bool {
 
     // Update transactions
     accountToUpdate.addTransactions(newAccount.postedTransactions())
@@ -89,7 +89,7 @@ struct BankAccountManager {
       } catch {}
     }
     
-    let fileName = "BankAccounts.WBA"
+    let fileName = "Accounts.WBA"
     return (folder as NSString).stringByAppendingPathComponent(fileName)
   }
   

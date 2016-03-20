@@ -15,10 +15,10 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
   @IBOutlet weak var availableBalanceTextField: NSTextField!
   @IBOutlet weak var tableView:                 NSTableView!
 //  @IBOutlet weak var bankAccountGraph: LineGraph!
-  var bankAccountNumber:                        String!
+  var accountNumber:                            String!
   var transactions:                             [Transaction] = []
-  var bankAccount:                              BankAccount? {
-    return bankAccountNumber != nil ? BankAccountManager.sharedManager.bankAccountWithAccountNumber(bankAccountNumber) : nil
+  var account:                                  Account? {
+    return accountNumber != nil ? AccountManager.sharedManager.accountWithAccountNumber(accountNumber) : nil
   }
   
   //========================================================================================
@@ -51,7 +51,7 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
   override func viewWillAppear() {
     super.viewDidLoad()
     
-    guard let account = bankAccount else { return }
+    guard let account = account else { return }
     
     tableView.reloadData()
     
@@ -59,7 +59,7 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
     numberFormatter.numberStyle           = .CurrencyAccountingStyle
     numberFormatter.currencyCode          = account.currencyCode
     
-    accountTitleTextField.stringValue     = bankAccount!.title
+    accountTitleTextField.stringValue     = account.title
     ledgerBalanceTextField.stringValue    = numberFormatter.stringFromNumber(account.ledgerBalance)!
     availableBalanceTextField.stringValue = numberFormatter.stringFromNumber(account.availBalance)!
     
@@ -78,7 +78,7 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
   //----------------------------------------------------------------------------------------
   func numberOfRowsInTableView(tableView: NSTableView) -> Int {
     // Sort Transactions
-    if let account = bankAccount {
+    if let account = account {
       let sortDescriptors = tableView.sortDescriptors
       let unsortedTrans   = account.postedTransactions() as NSArray
       transactions        = unsortedTrans.sortedArrayUsingDescriptors(sortDescriptors) as! [Transaction]
@@ -132,7 +132,7 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
     else if columnID == "Amount" {
       let numberFormatter           = NSNumberFormatter()
       numberFormatter.numberStyle   = NSNumberFormatterStyle.CurrencyAccountingStyle
-      numberFormatter.currencyCode  = self.bankAccount?.currencyCode
+      numberFormatter.currencyCode  = self.account?.currencyCode
       
       cell.textField?.stringValue = numberFormatter.stringFromNumber(transaction.amount)!
     }
@@ -199,7 +199,7 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
   // <#function#>
   //----------------------------------------------------------------------------------------
   private func gatherBankAccountGraphData() -> [(NSDate, NSDecimalNumber)]{
-    guard let account = bankAccount else { return [] }
+    guard let account = account else { return [] }
     
     var tuples: [(NSDate, NSDecimalNumber)] = []
     var balance = account.availBalance

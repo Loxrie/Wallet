@@ -39,11 +39,11 @@ class WalletSourceListViewController: SourceListViewController {
     let budgets   = SourceListItem(title: "Budgets", asGroupItem: true)
     
     // Bank Account
-    let allAccounts = BankAccountManager.sharedManager.allAccounts()
+    let allAccounts = AccountManager.sharedManager.allAccounts()
     for account in allAccounts {
       let accountItem                   = SourceListItem(title: account.title, asGroupItem: false)
       let bankAccountVC                 = self.storyboard?.instantiateControllerWithIdentifier("BankAccountViewController") as? BankAccountViewController
-      bankAccountVC?.bankAccountNumber  = account.accountNumber
+      bankAccountVC?.accountNumber  = account.accountNumber
       accountItem.viewController        = bankAccountVC
       accounts.children.append(accountItem)
     }

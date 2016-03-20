@@ -1,5 +1,5 @@
 //
-//  BankAccountType.swift
+//  FinancialInstitution.swift
 //  Wallet
 //
 //  Created by Duff Neubauer on 12/22/15.
@@ -9,14 +9,16 @@
 import Foundation
 
 //================================================
-// MARK: BankAccountType
+// MARK: FinancialInstitution
 //================================================
-enum BankAccountType: String {
-  case Checking = "CHECKING"
+enum FinancialInstitution: String {
+  case WellsFargo = "WFB"
+  case CapitalOne = "C1"
   
   func description() -> String {
-    switch(self) {
-    case .Checking: return "Checking"
+    switch (self) {
+    case .WellsFargo: return "Wells Fargo"
+    case .CapitalOne: return "Capital One"
     }
   }
 }

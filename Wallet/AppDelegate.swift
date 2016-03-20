@@ -15,7 +15,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   // applicationWillTerminate(notification:)
   //----------------------------------------------------------------------------------------
   func applicationWillTerminate(notification: NSNotification) {
-    BankAccountManager.sharedManager.save()
+    AccountManager.sharedManager.save()
     BudgetCategoryManager.sharedManager.save()
   }
 }
