@@ -21,7 +21,7 @@ class Account: NSObject, NSCoding {
   var availBalance:         NSDecimalNumber
   var dateOfBalance:        NSDate
   var title:                String {
-    return "\(financialInstitution.description()) - \(type.description())"
+    return type.description()
   }
   
   //================================================

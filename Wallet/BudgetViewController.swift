@@ -16,8 +16,12 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   private let GOAL      = "goal"
   private let NET       = "net"
   
+  @IBOutlet weak var headerTableView: NSTableView!
   @IBOutlet weak var tableView: NSTableView!
+  @IBOutlet weak var dateLabel: NSTextField!
   var budgetCategories = [BudgetCategory]()
+  var transactions = [Transaction]()
+  var currentComponents: NSDateComponents!
   lazy var numberFormatter: NSNumberFormatter = {
     let formatter = NSNumberFormatter()
     formatter.numberStyle = .CurrencyAccountingStyle
@@ -43,15 +47,15 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     
     // TableView
     tableView.allowsMultipleSelection = true
+    
+    // Transactions in this month
+    currentComponents = NSCalendar.currentCalendar().components([.Year, .Month], fromDate: NSDate())
   }
   
   override func viewWillAppear() {
     super.viewWillAppear()
     
-    self.budgetCategories = BudgetCategoryManager.sharedManager.updatedCategories()
-    
-    self.budgetCategories.forEach({ print($0) })
-    
+    self.monthDidChange(0)
     self.tableView.reloadData()
   }
   
@@ -98,6 +102,88 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     self.tableView.reloadDataForRowIndexes(NSIndexSet(index: row), columnIndexes: columnIndexSet)
   }
   
+  @IBAction func goToToday(sender: AnyObject) {
+    currentComponents = NSCalendar.currentCalendar().components([.Year, .Month], fromDate: NSDate())
+    self.monthDidChange(0)
+  }
+  @IBAction func goToPreviousMonth(sender: AnyObject) {
+    self.monthDidChange(-1)
+  }
+  @IBAction func goToNextMonth(sender: AnyObject) {
+    self.monthDidChange(1)
+  }
+  
+  //========================================================================================
+  // MARK: - Private Methods
+  //========================================================================================
+  
+  //----------------------------------------------------------------------------------------
+  // displayDate()
+  //----------------------------------------------------------------------------------------
+  func displayDate() {
+    let month = NSDateFormatter().monthSymbols[currentComponents.month - 1]
+    dateLabel.stringValue = "\(month) \(currentComponents.year)"
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // updateTransactions()
+  //----------------------------------------------------------------------------------------
+  func updateTransactions() {
+    let calendar                = NSCalendar.currentCalendar()
+    var unfilteredTransactions  = [Transaction]()
+    AccountManager.sharedManager.allAccounts().forEach({ unfilteredTransactions.appendContentsOf($0.postedTransactions()) })
+    
+    transactions = unfilteredTransactions.filter({ calendar.components([.Month, .Year], fromDate: $0.datePosted) == currentComponents })
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // updateBudgetCategories()
+  //----------------------------------------------------------------------------------------
+  func updateBudgetCategories() {
+    
+    // Reset Categories
+    let categoryDict = BudgetCategoryManager.sharedManager.budgetCategories
+    categoryDict.forEach({ $0.1.actual = 0 })
+    
+    // Re-calc categories
+    transactions.forEach { (transaction) in
+      guard let title     = transaction.category,
+        let category  = categoryDict[title] else { return }
+      
+      category.addTransaction(transaction)
+    }
+    
+    budgetCategories = categoryDict.keys.sort().map({ categoryDict[$0]! })
+  }
+  
+  //----------------------------------------------------------------------------------------
+  // monthDidChange(change:)
+  //----------------------------------------------------------------------------------------
+  ///  0 = no change
+  /// +1 = next month
+  /// -1 = previous month
+  func monthDidChange(change: Int) {
+    guard change == 0 || change == 1 || change == -1 else { return }
+    
+    // Normalize month to 1...12
+    if currentComponents.month == 12 && change == 1 {
+      currentComponents.month = 1
+      currentComponents.year = currentComponents.year + 1
+    }
+    else if currentComponents.month == 1 && change == -1 {
+      currentComponents.month = 12
+      currentComponents.year = currentComponents.year - 1
+    }
+    else {
+      currentComponents.month = currentComponents.month + change
+    }
+    
+    self.displayDate()
+    self.updateTransactions()
+    self.updateBudgetCategories()
+    self.tableView.reloadData()
+  }
+  
   //========================================================================================
   // MARK: - NSTableViewDelegate / NSTableViewDataSource
   //========================================================================================
@@ -106,7 +192,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   // numberOfRowsInTableView(tableView:) -> Int
   //----------------------------------------------------------------------------------------
   func numberOfRowsInTableView(tableView: NSTableView) -> Int {
-    return self.budgetCategories.count
+    return tableView == headerTableView ? 1 : budgetCategories.count
   }
   
   //----------------------------------------------------------------------------------------
@@ -132,7 +218,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
       } else if category.goal.floatValue == 0 && category.actual.floatValue > 0 {
         percent = 100.0
       }
-      cell.updatePercentFull(CGFloat(percent))
+      cell.updatePercentFull(CGFloat(percent), withAmount: category.actual)
       return cell
       
     case (GOAL, let cell as NSTableCellView):

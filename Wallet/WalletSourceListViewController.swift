@@ -34,21 +34,35 @@ class WalletSourceListViewController: SourceListViewController {
   // refreshSourceItems()
   //----------------------------------------------------------------------------------------
   func refreshSourceItems() {
-    // Headers
-    let accounts  = SourceListItem(title: "Accounts", asGroupItem: true)
-    let budgets   = SourceListItem(title: "Budgets", asGroupItem: true)
     
-    // Bank Account
-    let allAccounts = AccountManager.sharedManager.allAccounts()
-    for account in allAccounts {
-      let accountItem                   = SourceListItem(title: account.title, asGroupItem: false)
-      let bankAccountVC                 = self.storyboard?.instantiateControllerWithIdentifier("BankAccountViewController") as? BankAccountViewController
-      bankAccountVC?.accountNumber  = account.accountNumber
-      accountItem.viewController        = bankAccountVC
-      accounts.children.append(accountItem)
+    let numberFormatter           = NSNumberFormatter()
+    numberFormatter.numberStyle   = NSNumberFormatterStyle.CurrencyAccountingStyle
+    if let account = AccountManager.sharedManager.allAccounts().first {
+      numberFormatter.currencyCode = account.currencyCode
+    } else {
+      numberFormatter.currencyCode = NSLocale.currentLocale().valueForKey(NSLocaleCurrencyCode) as? String
     }
     
+    // Accounts
+    let accounts      = SourceListItem(title: "Accounts", asGroupItem: true)
+    let allAccounts   = AccountManager.sharedManager.allAccounts()
+    for account in allAccounts {
+      
+      // Create Source Item
+      let accountItem               = SourceListItem(title: account.title, asGroupItem: false)
+      accountItem.subtitle          = numberFormatter.stringFromNumber(account.ledgerBalance)!
+      let bankAccountVC             = self.storyboard?.instantiateControllerWithIdentifier("BankAccountViewController") as? BankAccountViewController
+      bankAccountVC?.accountNumber  = account.accountNumber
+      accountItem.viewController    = bankAccountVC
+      accounts.children.append(accountItem)
+    }
+    accounts.children = accounts.children.sort({ $0.title.localizedCompare($1.title) != .OrderedDescending })
+    
+    
     // Budget
+    let budgets   = SourceListItem(title: "Budgets", asGroupItem: true)
+    budgets.isSelectable = false
+    
     let monthly = SourceListItem(title: "Budget", asGroupItem: false)
     monthly.viewController = self.storyboard?.instantiateControllerWithIdentifier("BudgetViewController") as? BudgetViewController
     budgets.children = [monthly]

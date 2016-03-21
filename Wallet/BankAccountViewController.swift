@@ -12,7 +12,8 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
   
   @IBOutlet weak var accountTitleTextField:     NSTextField!
   @IBOutlet weak var ledgerBalanceTextField:    NSTextField!
-  @IBOutlet weak var availableBalanceTextField: NSTextField!
+  @IBOutlet weak var finacialInstitutionField:  NSTextField!
+//  @IBOutlet weak var availableBalanceTextField: NSTextField!
   @IBOutlet weak var tableView:                 NSTableView!
 //  @IBOutlet weak var bankAccountGraph: LineGraph!
   var accountNumber:                            String!
@@ -60,8 +61,9 @@ class BankAccountViewController: NSViewController, NSTableViewDataSource, NSTabl
     numberFormatter.currencyCode          = account.currencyCode
     
     accountTitleTextField.stringValue     = account.title
+    finacialInstitutionField.stringValue  = account.financialInstitution.description()
     ledgerBalanceTextField.stringValue    = numberFormatter.stringFromNumber(account.ledgerBalance)!
-    availableBalanceTextField.stringValue = numberFormatter.stringFromNumber(account.availBalance)!
+//    availableBalanceTextField.stringValue = numberFormatter.stringFromNumber(account.availBalance)!
     
 //    // Load graph values
 //    let graphData               = gatherBankAccountGraphData()

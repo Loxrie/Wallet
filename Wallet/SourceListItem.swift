@@ -14,12 +14,16 @@ class SourceListItem: NSObject {
   
   var viewController: NSViewController?
   var children:       [SourceListItem]
+  var subtitle:       String
+  var isSelectable:   Bool
   
   init(title: String, asGroupItem: Bool) {
     self.title          = title
     self.isGroupItem    = asGroupItem
     self.viewController = nil
     self.children       = []
+    self.subtitle       = ""
+    self.isSelectable   = true
   }
   
   func hasChildren() -> Bool {

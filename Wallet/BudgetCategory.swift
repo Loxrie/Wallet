@@ -14,7 +14,7 @@ import Foundation
 struct BudgetCategoryManager {
   static var sharedManager = BudgetCategoryManager()
   
-  private var budgetCategories = [String: BudgetCategory]()
+  var budgetCategories = [String: BudgetCategory]()
   
   //========================================================================================
   // MARK: - Lifecycle
@@ -27,24 +27,24 @@ struct BudgetCategoryManager {
   }
   
   func updatedCategories() -> [BudgetCategory] {
-    // Get all transactions
-    let allAccounts = AccountManager.sharedManager.allAccounts()
-    var allTransactions: [Transaction] = []
-    allAccounts.forEach({ $0.postedTransactions().forEach({ allTransactions.append($0) }) })
+//    // Get all transactions
+//    let allAccounts = AccountManager.sharedManager.allAccounts()
+//    var allTransactions: [Transaction] = []
+//    allAccounts.forEach({ $0.postedTransactions().forEach({ allTransactions.append($0) }) })
+//    
+//    // Reset Categories
+//    let categories = self.budgetCategories
+//    categories.forEach({ $0.1.actual = 0 })
+//    
+//    // Re-calc categories
+//    allTransactions.forEach { (transaction) in
+//      guard let title     = transaction.category,
+//            let category  = categories[title] else { return }
+//      
+//      category.addTransaction(transaction)
+//    }
     
-    // Reset Categories
-    let categories = self.budgetCategories
-    categories.forEach({ $0.1.actual = 0 })
-    
-    // Re-calc categories
-    allTransactions.forEach { (transaction) in
-      guard let title     = transaction.category,
-            let category  = categories[title] else { return }
-      
-      category.addTransaction(transaction)
-    }
-    
-    return categories.map({ $0.1 })
+    return budgetCategories.map({ $0.1 })
   }
   
   func budgetTitles() -> [String] {

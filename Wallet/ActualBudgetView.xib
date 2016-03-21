@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10109" systemVersion="15E63" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10109" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10109"/>
@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ActualBudgetView">
             <connections>
+                <outlet property="amountLabel" destination="Ziz-xC-dCs" id="cgS-vs-O71"/>
                 <outlet property="topView" destination="rRg-EZ-1DY" id="jrT-YZ-B2S"/>
                 <outlet property="view" destination="c22-O7-iKe" id="1n3-Su-r0z"/>
                 <outlet property="widthConstraint" destination="cQb-fg-k3n" id="gIC-ua-khW"/>
@@ -19,16 +20,32 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="rRg-EZ-1DY">
-                    <rect key="frame" x="0.0" y="0.0" width="451" height="165"/>
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="165"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="451" id="cQb-fg-k3n"/>
+                        <constraint firstAttribute="width" constant="300" id="cQb-fg-k3n"/>
                     </constraints>
                 </customView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="Ziz-xC-dCs">
+                    <rect key="frame" x="208" y="74" width="90" height="17"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="86" id="Btz-5I-Cml"/>
+                        <constraint firstAttribute="height" constant="17" id="Kns-4D-opw"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="$222,222,222" id="Q95-W2-YVT">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="highlightColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="rRg-EZ-1DY" secondAttribute="bottom" id="7qJ-UP-zYz"/>
+                <constraint firstItem="Ziz-xC-dCs" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="c22-O7-iKe" secondAttribute="leading" constant="4" id="8Gc-g3-bd3"/>
+                <constraint firstItem="Ziz-xC-dCs" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="NeQ-vf-f7o"/>
                 <constraint firstItem="rRg-EZ-1DY" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="Ruc-6y-S7R"/>
+                <constraint firstItem="Ziz-xC-dCs" firstAttribute="trailing" secondItem="rRg-EZ-1DY" secondAttribute="trailing" priority="750" constant="-4" id="iEF-1x-n2M"/>
                 <constraint firstItem="rRg-EZ-1DY" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="wig-wH-BXo"/>
+                <constraint firstItem="Ziz-xC-dCs" firstAttribute="leading" secondItem="rRg-EZ-1DY" secondAttribute="trailing" priority="749" constant="8" id="xyH-j1-RWs"/>
             </constraints>
             <point key="canvasLocation" x="304" y="247.5"/>
         </customView>

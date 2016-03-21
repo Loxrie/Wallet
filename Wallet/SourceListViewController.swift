@@ -93,7 +93,7 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   func outlineView(outlineView: NSOutlineView, shouldSelectItem item: AnyObject) -> Bool {
     guard let sourceItem = item as? SourceListItem else { return false }
     
-    return !sourceItem.isGroupItem
+    return sourceItem.isSelectable
   }
   
   //----------------------------------------------------------------------------------------
@@ -101,16 +101,18 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
     guard let sourceItem = item as? SourceListItem else { return nil }
-    var cell: NSTableCellView? = nil
-    if sourceItem.isGroupItem {
-      cell = outlineView.makeViewWithIdentifier("HeaderCell", owner: self) as? NSTableCellView
-      cell?.textField?.stringValue = sourceItem.title.uppercaseString
-    } else {
-      cell = outlineView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView
-      cell?.textField?.stringValue = sourceItem.title.capitalizedString
-    }
     
-    return cell
+    if sourceItem.isGroupItem {
+      let cell = outlineView.makeViewWithIdentifier("HeaderCell", owner: self) as? HeaderCellView
+      cell?.titleLabel.stringValue    = sourceItem.title.uppercaseString
+      cell?.subtitleLabel.stringValue = sourceItem.subtitle
+      return cell
+    } else {
+      let cell = outlineView.makeViewWithIdentifier("DataCell", owner: self) as? DataCellView
+      cell?.titleLabel.stringValue    = sourceItem.title
+      cell?.subtitleLabel.stringValue = sourceItem.subtitle
+      return cell
+    }
   }
   
   //----------------------------------------------------------------------------------------

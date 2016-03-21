@@ -70,6 +70,13 @@ struct AccountManager {
     return true
   }
   
+  //----------------------------------------------------------------------------------------
+  // totalLedgerBalance() -> NSDecimalNumber
+  //----------------------------------------------------------------------------------------
+  func totalLedgerBalance() -> NSDecimalNumber {
+    return self.allAccounts().reduce(NSDecimalNumber(double: 0.0), combine: { $0.decimalNumberByAdding($1.ledgerBalance) })
+  }
+  
   //================================================
   // MARK: Saving / Restoring State
   //================================================
