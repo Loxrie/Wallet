@@ -21,7 +21,7 @@ enum GraphAxis {
 protocol GraphLabelDelegate {
   /// Should return an array of tuples which contain the value to be labeled along
   /// with a human-readable string for the label
-  func labelsForAxis(axis: GraphAxis) -> [(CGFloat, String)]
+  func labelsForAxis(_ axis: GraphAxis) -> [(CGFloat, String)]
 }
 
 //========================================================================================
@@ -34,7 +34,7 @@ class Graph: NSView {
   //========================================================================================
   /// Used to determine how much space axes labels will take up
   private let maxLabelBlock = { (tuple: (CGFloat, String), axis: GraphAxis) -> CGFloat in
-    let label         = NSTextField(frame: CGRectZero)
+    let label         = NSTextField(frame: CGRect.zero)
     label.stringValue = tuple.1
     label.sizeToFit()
     return axis == .xAxis ? label.frame.size.height : label.frame.size.width
@@ -42,12 +42,12 @@ class Graph: NSView {
   
   private var categoryLabels: [(CGFloat, String)] = []  {
     didSet {
-      categoryLabelHeight = categoryLabels.map({ maxLabelBlock($0, .xAxis) }).maxElement()!
+      categoryLabelHeight = categoryLabels.map({ maxLabelBlock($0, .xAxis) }).max()!
     }
   }
   private var valueLabels: [(CGFloat, String)] = []  {
     didSet {
-      valueLabelWidth = valueLabels.map({ maxLabelBlock($0, .yAxis) }).maxElement()!
+      valueLabelWidth = valueLabels.map({ maxLabelBlock($0, .yAxis) }).max()!
     }
   }
   private let padding:              CGFloat = 10.0
@@ -64,8 +64,8 @@ class Graph: NSView {
   var categories = [CGFloat]() {
     didSet {
       if categories.count > 0 {
-        minCategory     = categories.minElement()!
-        maxCategory     = categories.maxElement()!
+        minCategory     = categories.min()!
+        maxCategory     = categories.max()!
         categoryLabels  = delegate != nil ? delegate!.labelsForAxis(.xAxis) : []
       }
     }
@@ -73,16 +73,16 @@ class Graph: NSView {
   var values = [CGFloat]() {
     didSet {
       if values.count > 0 {
-        minValue    = values.minElement()!
-        maxValue    = values.maxElement()!
+        minValue    = values.min()!
+        maxValue    = values.max()!
         valueLabels = delegate != nil ? delegate!.labelsForAxis(.yAxis) : []
       }
     }
   }
-  var backgroundColor               = NSColor.whiteColor()
+  var backgroundColor               = NSColor.white()
   var borderColor                   = NSColor(white: 0.80, alpha: 1.0)
   var delegate: GraphLabelDelegate? = nil
-  var graphFrame                    = CGRectZero
+  var graphFrame                    = CGRect.zero
   
   //========================================================================================
   // MARK: - Lifecycle
@@ -91,8 +91,8 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // drawRect(dirtyRect: NSRect)
   //----------------------------------------------------------------------------------------
-  override func drawRect(dirtyRect: NSRect) {
-    super.drawRect(dirtyRect)
+  override func draw(_ dirtyRect: NSRect) {
+    super.draw(dirtyRect)
 
     guard categories.count == values.count && self.delegate != nil else { return }
     
@@ -131,7 +131,7 @@ class Graph: NSView {
   // drawDataPoints(points:frame:)
   //----------------------------------------------------------------------------------------
   /// Must be overridden by subclass
-  func drawDataPoints(points: [CGPoint], frame: CGRect) {}
+  func drawDataPoints(_ points: [CGPoint], frame: CGRect) {}
   
   //========================================================================================
   // MARK: - Private Methods
@@ -149,19 +149,19 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // drawBackgroundColor(bgColor)
   //----------------------------------------------------------------------------------------
-  private func drawBackgroundColor(bgColor: NSColor) {
+  private func drawBackgroundColor(_ bgColor: NSColor) {
     self.wantsLayer             = true
-    self.layer?.backgroundColor = bgColor.CGColor
+    self.layer?.backgroundColor = bgColor.cgColor
   }
   
   //----------------------------------------------------------------------------------------
   // drawBorder(frame:)
   //----------------------------------------------------------------------------------------
-  private func drawBorder(frame: CGRect) {
+  private func drawBorder(_ frame: CGRect) {
     let path = NSBezierPath()
     borderColor.setStroke()
     path.lineWidth = 1.0
-    path.appendBezierPathWithRect(frame)
+    path.appendRect(frame)
     path.stroke()
   }
   
@@ -172,7 +172,7 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // determineGraphSize(frame:)
   //----------------------------------------------------------------------------------------
-  private func determineGraphSize(frame: CGRect) -> CGRect {
+  private func determineGraphSize(_ frame: CGRect) -> CGRect {
     var graphFrame = frame
     
     graphFrame.origin.y     += (categoryLabelHeight + padding)
@@ -186,7 +186,7 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // drawGridLines(labels:axis:frame:)
   //----------------------------------------------------------------------------------------
-  private func drawGridLines(labelPixels: [CGFloat], axis: GraphAxis, frame: CGRect) {
+  private func drawGridLines(_ labelPixels: [CGFloat], axis: GraphAxis, frame: CGRect) {
     for pixel in labelPixels {
       let xStart  = axis == .xAxis ? pixel : frame.origin.x
       let yStart  = axis == .xAxis ? frame.origin.y : pixel
@@ -199,8 +199,8 @@ class Graph: NSView {
       let path = NSBezierPath()
       borderColor.setStroke()
       path.lineWidth = 1.0
-      path.moveToPoint(start)
-      path.lineToPoint(end)
+      path.move(to: start)
+      path.line(to: end)
       path.stroke()
     }
   }
@@ -208,7 +208,7 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // labelAxis(labelPixels:labelStrings:axis:frame:)
   //----------------------------------------------------------------------------------------
-  private func labelAxis(labelPixels: [CGFloat], labelStrings: [String], axis: GraphAxis, frame: CGRect) {
+  private func labelAxis(_ labelPixels: [CGFloat], labelStrings: [String], axis: GraphAxis, frame: CGRect) {
     for index in 0 ..< labelPixels.count {
       let labelString = labelStrings[index]
       let labelPoint  = labelPixels[index]
@@ -218,9 +218,9 @@ class Graph: NSView {
       let label       = NSTextField(frame: frame)
       
       label.stringValue     = labelString
-      label.backgroundColor = NSColor.clearColor()
-      label.bordered        = false
-      label.alignment       = axis == .xAxis ? .Center : .Left
+      label.backgroundColor = NSColor.clear()
+      label.isBordered        = false
+      label.alignment       = axis == .xAxis ? .center : .left
       label.sizeToFit()
       
       var adjFrame = label.frame
@@ -243,7 +243,7 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // convertValueToPixels(value:axis:frame:) -> CGFloat
   //----------------------------------------------------------------------------------------
-  private func convertValueToPixels(value: CGFloat, axis: GraphAxis, frame: CGRect) -> CGFloat {
+  private func convertValueToPixels(_ value: CGFloat, axis: GraphAxis, frame: CGRect) -> CGFloat {
     let min   = self.minAxisValue(axis)
     let scale = self.scale(axis, frame: frame)
     let pixel = (value - min) * scale
@@ -253,21 +253,21 @@ class Graph: NSView {
   //----------------------------------------------------------------------------------------
   // minAxisValue(axis:) -> CGFloat
   //----------------------------------------------------------------------------------------
-  private func minAxisValue(axis: GraphAxis) -> CGFloat {
+  private func minAxisValue(_ axis: GraphAxis) -> CGFloat {
     return axis == .xAxis ? minCategory : minValue
   }
   
   //----------------------------------------------------------------------------------------
   // maxAxisValue(axis:) -> CGFloat
   //----------------------------------------------------------------------------------------
-  private func maxAxisValue(axis: GraphAxis) -> CGFloat {
+  private func maxAxisValue(_ axis: GraphAxis) -> CGFloat {
     return axis == .xAxis ? maxCategory : maxValue
   }
   
   //----------------------------------------------------------------------------------------
   // scale(axis:frame:) -> CGFloat
   //----------------------------------------------------------------------------------------
-  private func scale(axis: GraphAxis, frame: CGRect) -> CGFloat {
+  private func scale(_ axis: GraphAxis, frame: CGRect) -> CGFloat {
     let axisSize    = axis == .xAxis ? frame.size.width : frame.size.height
     let min         = self.minAxisValue(axis)
     let max         = self.maxAxisValue(axis)
@@ -286,19 +286,19 @@ class LineGraph: Graph {
   var lineColor = NSColor(red: 74/256.0, green: 144/256.0, blue: 226/256.0, alpha: 1.0)
   var fillColor = NSColor(red: 152/256.0, green: 190/256.0, blue: 235/256.0, alpha: 0.9)
   
-  override func drawDataPoints(points: [CGPoint], frame: CGRect) {
+  override func drawDataPoints(_ points: [CGPoint], frame: CGRect) {
     guard points.count > 0 else { return }
     
     let path = NSBezierPath()
     path.lineWidth = 3.0
-    path.moveToPoint(points[0])
+    path.move(to: points[0])
     
     fillColor.setFill()
     lineColor.setStroke()
     
     for index in 1 ..< points.count {
       let point = points[index]
-      path.lineToPoint(point)
+      path.line(to: point)
     }
     path.stroke()
     
@@ -307,13 +307,13 @@ class LineGraph: Graph {
       let p1 = points[0]
       let p2 = points[1]
       if p1.x > p2.x {    // Right to left
-        path.lineToPoint(CGPointMake(frame.origin.x, frame.origin.y))
-        path.lineToPoint(CGPointMake(frame.origin.x + frame.size.width, frame.origin.y))
+        path.line(to: CGPoint(x: frame.origin.x, y: frame.origin.y))
+        path.line(to: CGPoint(x: frame.origin.x + frame.size.width, y: frame.origin.y))
       } else {            // Left to right
-        path.lineToPoint(CGPointMake(frame.origin.x + frame.size.width, frame.origin.y))
-        path.lineToPoint(CGPointMake(frame.origin.x, frame.origin.y))
+        path.line(to: CGPoint(x: frame.origin.x + frame.size.width, y: frame.origin.y))
+        path.line(to: CGPoint(x: frame.origin.x, y: frame.origin.y))
       }
-      path.closePath()
+      path.close()
       path.fill()
     }
   }

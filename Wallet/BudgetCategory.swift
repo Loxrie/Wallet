@@ -21,7 +21,7 @@ struct BudgetCategoryManager {
   //========================================================================================
   
   init() {
-    if let budgetCategories = NSKeyedUnarchiver.unarchiveObjectWithFile(self.dataPath()) as? [String: BudgetCategory] {
+    if let budgetCategories = NSKeyedUnarchiver.unarchiveObject(withFile: self.dataPath()) as? [String: BudgetCategory] {
       self.budgetCategories = budgetCategories
     }
   }
@@ -51,9 +51,9 @@ struct BudgetCategoryManager {
     return budgetCategories.map({ $0.0 })
   }
   
-  mutating func removeCategory(category: BudgetCategory) {
+  mutating func removeCategory(_ category: BudgetCategory) {
     // Remove category
-    budgetCategories.removeValueForKey(category.title)
+    budgetCategories.removeValue(forKey: category.title)
     
     // Reset transactions whose category matches this one
     let allAccounts = AccountManager.sharedManager.allAccounts()
@@ -72,7 +72,7 @@ struct BudgetCategoryManager {
   // newCategory() -> BudgetCategory
   //----------------------------------------------------------------------------------------
   mutating func newCategory() -> BudgetCategory {
-    let category = BudgetCategory(title: "Category", goal: NSDecimalNumber(double: 0.0))
+    let category = BudgetCategory(title: "Category", goal: NSDecimalNumber(value: 0.0))
     
     // Check if default category already exists
     var title       = category.title
@@ -80,8 +80,8 @@ struct BudgetCategoryManager {
     let categories  = budgetCategories.keys
     while categories.contains(title) {
       var base = title
-      if let range = title.rangeOfString(" \(index)") {
-        base = title.substringToIndex(range.startIndex)
+      if let range = title.range(of: " \(index)") {
+        base = title.substring(to: range.lowerBound)
       }
       index = index + 1
       title = "\(base) \(index)"
@@ -127,19 +127,19 @@ struct BudgetCategoryManager {
   // MARK: Saving / Restoring State
   //================================================
   func dataPath() -> String {
-    let fileManager = NSFileManager.defaultManager()
+    let fileManager = FileManager.default()
     
-    var folder = fileManager.URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0].path!
-    folder = (folder as NSString).stringByAppendingPathComponent("Wallet")
+    var folder = fileManager.urlsForDirectory(.applicationSupportDirectory, inDomains: .userDomainMask)[0].path!
+    folder = (folder as NSString).appendingPathComponent("Wallet")
     
-    if !fileManager.fileExistsAtPath(folder) {
+    if !fileManager.fileExists(atPath: folder) {
       do {
-        try fileManager.createDirectoryAtPath(folder, withIntermediateDirectories: false, attributes: nil)
+        try fileManager.createDirectory(atPath: folder, withIntermediateDirectories: false, attributes: nil)
       } catch {}
     }
     
     let fileName = "Categories.WBC"
-    return (folder as NSString).stringByAppendingPathComponent(fileName)
+    return (folder as NSString).appendingPathComponent(fileName)
   }
   
   func save() {
@@ -147,12 +147,12 @@ struct BudgetCategoryManager {
     NSKeyedArchiver.archiveRootObject(self.budgetCategories, toFile: self.dataPath())
   }
   
-  mutating func changeTitleOfCategory(fromTitle: String, to toTitle: String) -> BudgetCategory? {
+  mutating func changeTitleOfCategory(_ fromTitle: String, to toTitle: String) -> BudgetCategory? {
     guard let category = budgetCategories[fromTitle] else { return nil }
 
     // Change title
     category.title = toTitle
-    budgetCategories.removeValueForKey(fromTitle)
+    budgetCategories.removeValue(forKey: fromTitle)
     budgetCategories[toTitle] = category
     
     // Adjust transactions
@@ -179,36 +179,36 @@ class BudgetCategory: NSObject, NSCoding {
   var goal:   NSDecimalNumber
   var actual: NSDecimalNumber
   var net:    NSDecimalNumber {
-    return goal.decimalNumberBySubtracting(actual)
+    return goal.subtracting(actual)
   }
   
   init(title: String, goal: NSDecimalNumber) {
     self.title  = title
     self.goal   = goal
-    self.actual = NSDecimalNumber(double: 0.0)
+    self.actual = NSDecimalNumber(value: 0.0)
   }
   
   //----------------------------------------------------------------------------------------
   // removeTransaction(transaction: Transaction)
   //----------------------------------------------------------------------------------------
-  func removeTransaction(transaction: Transaction) {
-    actual = actual.decimalNumberByAdding(transaction.amount)
+  func removeTransaction(_ transaction: Transaction) {
+    actual = actual.adding(transaction.amount)
   }
   
   //----------------------------------------------------------------------------------------
   // addTransaction(transaction: Transaction)
   //----------------------------------------------------------------------------------------
-  func addTransaction(transaction: Transaction) {
-    actual = actual.decimalNumberBySubtracting(transaction.amount)
+  func addTransaction(_ transaction: Transaction) {
+    actual = actual.subtracting(transaction.amount)
   }
   
   //================================================
   // MARK: NSCoding
   //================================================
   required init?(coder aDecoder: NSCoder) {
-    guard let title   = aDecoder.decodeObjectForKey("title") as? String,
-          let goal    = aDecoder.decodeObjectForKey("goal") as? NSDecimalNumber,
-          let actual  = aDecoder.decodeObjectForKey("actual") as? NSDecimalNumber else { return nil }
+    guard let title   = aDecoder.decodeObject(forKey: "title") as? String,
+          let goal    = aDecoder.decodeObject(forKey: "goal") as? NSDecimalNumber,
+          let actual  = aDecoder.decodeObject(forKey: "actual") as? NSDecimalNumber else { return nil }
     
     self.title  = title
     self.goal   = goal
@@ -217,9 +217,9 @@ class BudgetCategory: NSObject, NSCoding {
     super.init()
   }
   
-  func encodeWithCoder(aCoder: NSCoder) {
-    aCoder.encodeObject(self.title, forKey: "title")
-    aCoder.encodeObject(self.goal, forKey: "goal")
-    aCoder.encodeObject(self.actual, forKey: "actual")
+  func encode(with aCoder: NSCoder) {
+    aCoder.encode(self.title, forKey: "title")
+    aCoder.encode(self.goal, forKey: "goal")
+    aCoder.encode(self.actual, forKey: "actual")
   }
 }

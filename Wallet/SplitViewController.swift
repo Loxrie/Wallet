@@ -40,14 +40,14 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
     // Budget
     let budget = self.sourceListViewController().budgetSourceListItem()
     let monthly = SourceListItem(title: "Budget", asGroupItem: false)
-    monthly.viewController = self.storyboard?.instantiateControllerWithIdentifier(self.budgetViewController) as? BudgetViewController
+    monthly.viewController = self.storyboard?.instantiateController(withIdentifier: self.budgetViewController) as? BudgetViewController
     budget.children = [monthly]
 
     self.sourceListViewController().refresh()
     
     // Select the view we are testing
-    let index = self.sourceListViewController().outlineView.rowForItem(monthly)
-    self.sourceListViewController().outlineView.selectRowIndexes(NSIndexSet(index: index), byExtendingSelection: false)
+    let index = self.sourceListViewController().outlineView.row(forItem: monthly)
+    self.sourceListViewController().outlineView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
   }
 
   //========================================================================================
@@ -57,12 +57,12 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
   //----------------------------------------------------------------------------------------
   // newBankAccount(sender:)
   //----------------------------------------------------------------------------------------
-  @IBAction func newBankAccount(sender: AnyObject) {
-    guard let window = NSApplication.sharedApplication().keyWindow else { return }
-    self.openPanel.beginSheetModalForWindow(window, completionHandler: { (response:Int) -> Void in
+  @IBAction func newBankAccount(_ sender: AnyObject) {
+    guard let window = NSApplication.shared().keyWindow else { return }
+    self.openPanel.beginSheetModal(for: window, completionHandler: { (response:Int) -> Void in
       if response == NSModalResponseOK {
         
-        let url = self.openPanel.URLs[0]
+        let url = self.openPanel.urls[0]
         guard let account = Account(statement: url) else { return }
         
         if let existingAccount = AccountManager.sharedManager.accountWithAccountNumber(account.accountNumber) {
@@ -106,14 +106,14 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
   //----------------------------------------------------------------------------------------
   // displayViewController(viewController:)
   //----------------------------------------------------------------------------------------
-  func displayViewController(viewController: NSViewController) {
+  func displayViewController(_ viewController: NSViewController) {
     guard self.detailViewController() != viewController else { return }
     
     let detailViewController = self.detailViewController()
     
     // Remove old view controller
     if detailViewController.childViewControllers.count > 0 {
-      detailViewController.removeChildViewControllerAtIndex(0)
+      detailViewController.removeChildViewController(at: 0)
       detailViewController.view.subviews[0].removeFromSuperview()
       detailViewController.view.translatesAutoresizingMaskIntoConstraints = true
     }
@@ -126,10 +126,10 @@ class SplitViewController: NSSplitViewController, SourceListViewControllerDelega
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
     let views = ["view": viewController.view]
     
-    let horzContraint = NSLayoutConstraint.constraintsWithVisualFormat("H:|[view]|", options: [], metrics: nil, views: views)
-    let vertContraint = NSLayoutConstraint.constraintsWithVisualFormat("V:|[view]|", options: [], metrics: nil, views: views)
+    let horzContraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|[view]|", options: [], metrics: nil, views: views)
+    let vertContraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: views)
     
-    NSLayoutConstraint.activateConstraints(horzContraint)
-    NSLayoutConstraint.activateConstraints(vertContraint)
+    NSLayoutConstraint.activate(horzContraint)
+    NSLayoutConstraint.activate(vertContraint)
   }
 }

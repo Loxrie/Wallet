@@ -16,7 +16,7 @@ class Transaction: NSObject, NSCoding {
   var payee:       String!
   var amount:     NSDecimalNumber!
   var type:       TransactionType!
-  var datePosted: NSDate!
+  var datePosted: Date!
   var unique:     String!
   
   var memo:       String?   = nil
@@ -30,18 +30,18 @@ class Transaction: NSObject, NSCoding {
 //    let numberFormatter         = NSNumberFormatter()
 //    numberFormatter.numberStyle = .DecimalStyle
     
-    let dateFormatter         = NSDateFormatter()
-    dateFormatter.timeZone    = NSTimeZone.defaultTimeZone()
+    let dateFormatter         = DateFormatter()
+    dateFormatter.timeZone    = TimeZone.default()
     dateFormatter.dateFormat  = "yyyyMMddhhmmss.SSS"
     
     // Check we have all the necessary values
-    guard let name          = info[.Name],
-          let amountString  = info[.Amount],
-          let typeString    = info[.TransactionType],
+    guard let name          = info[.name],
+          let amountString  = info[.amount],
+          let typeString    = info[.transactionType],
           let type          = TransactionType(rawValue: typeString),
-          let dateString    = info[.DatePosted],
-          let datePosted    = dateFormatter.dateFromString(dateString),
-          let unique        = info[.UniqueID] else { return nil }
+          let dateString    = info[.datePosted],
+          let datePosted    = dateFormatter.date(from: dateString),
+          let unique        = info[.uniqueID] else { return nil }
     
     // For every transaction
     self.payee       = name
@@ -51,8 +51,8 @@ class Transaction: NSObject, NSCoding {
     self.unique     = unique
     
     // For some transactions
-    self.memo       = info[.Memo]
-    if let checkNum = info[.CheckNum] {
+    self.memo       = info[.memo]
+    if let checkNum = info[.checkNum] {
       self.checkNum = NSDecimalNumber(string: checkNum)
     } else {
       self.checkNum = nil
@@ -66,12 +66,12 @@ class Transaction: NSObject, NSCoding {
   required init?(coder aDecoder: NSCoder) {
     super.init()
     
-    guard let payee       = aDecoder.decodeObjectForKey("payee")       as? String,
-          let amount      = aDecoder.decodeObjectForKey("amount")     as? NSDecimalNumber,
-          let typeRaw     = aDecoder.decodeObjectForKey("type")       as? String,
+    guard let payee       = aDecoder.decodeObject(forKey: "payee")       as? String,
+          let amount      = aDecoder.decodeObject(forKey: "amount")     as? NSDecimalNumber,
+          let typeRaw     = aDecoder.decodeObject(forKey: "type")       as? String,
           let type        = TransactionType(rawValue: typeRaw),
-          let datePosted  = aDecoder.decodeObjectForKey("datePosted") as? NSDate,
-          let unique      = aDecoder.decodeObjectForKey("unique")     as? String else { return nil }
+          let datePosted  = aDecoder.decodeObject(forKey: "datePosted") as? Date,
+          let unique      = aDecoder.decodeObject(forKey: "unique")     as? String else { return nil }
     
     self.payee      = payee
     self.amount     = amount
@@ -79,28 +79,28 @@ class Transaction: NSObject, NSCoding {
     self.datePosted = datePosted
     self.unique     = unique
     
-    if let memo = aDecoder.decodeObjectForKey("memo") as? String {
+    if let memo = aDecoder.decodeObject(forKey: "memo") as? String {
       self.memo = memo
     }
     
-    if let checkNum = aDecoder.decodeObjectForKey("checkNum") as? NSDecimalNumber {
+    if let checkNum = aDecoder.decodeObject(forKey: "checkNum") as? NSDecimalNumber {
       self.checkNum = checkNum
     }
     
-    if let category = aDecoder.decodeObjectForKey("category") as? String {
+    if let category = aDecoder.decodeObject(forKey: "category") as? String {
       self.category = category
     }
   }
   
-  func encodeWithCoder(aCoder: NSCoder) {
-    aCoder.encodeObject(self.payee, forKey: "payee")
-    aCoder.encodeObject(self.amount, forKey: "amount")
-    aCoder.encodeObject(self.type.rawValue, forKey: "type")
-    aCoder.encodeObject(self.datePosted, forKey: "datePosted")
-    aCoder.encodeObject(self.unique, forKey: "unique")
-    aCoder.encodeObject(self.memo, forKey: "memo")
-    aCoder.encodeObject(self.checkNum, forKey: "checkNum")
-    aCoder.encodeObject(self.category, forKey: "category")
+  func encode(with aCoder: NSCoder) {
+    aCoder.encode(self.payee, forKey: "payee")
+    aCoder.encode(self.amount, forKey: "amount")
+    aCoder.encode(self.type.rawValue, forKey: "type")
+    aCoder.encode(self.datePosted, forKey: "datePosted")
+    aCoder.encode(self.unique, forKey: "unique")
+    aCoder.encode(self.memo, forKey: "memo")
+    aCoder.encode(self.checkNum, forKey: "checkNum")
+    aCoder.encode(self.category, forKey: "category")
   }
 }
 

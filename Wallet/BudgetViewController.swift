@@ -21,11 +21,11 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   @IBOutlet weak var dateLabel: NSTextField!
   var budgetCategories = [BudgetCategory]()
   var transactions = [Transaction]()
-  var currentComponents: NSDateComponents!
-  lazy var numberFormatter: NSNumberFormatter = {
-    let formatter = NSNumberFormatter()
-    formatter.numberStyle = .CurrencyAccountingStyle
-    formatter.locale      = NSLocale.currentLocale()
+  var currentComponents: DateComponents!
+  lazy var numberFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .currencyAccounting
+    formatter.locale      = Locale.current()
     
     return formatter
   }()
@@ -41,7 +41,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     
     // Set background to white
     let layer = CALayer()
-    layer.backgroundColor = NSColor.whiteColor().CGColor
+    layer.backgroundColor = NSColor.white().cgColor
     self.view.wantsLayer = true
     self.view.layer = layer
     
@@ -49,7 +49,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     tableView.allowsMultipleSelection = true
     
     // Transactions in this month
-    currentComponents = NSCalendar.currentCalendar().components([.Year, .Month], fromDate: NSDate())
+    currentComponents = Calendar.current().components([.year, .month], from: Date())
   }
   
   override func viewWillAppear() {
@@ -63,17 +63,17 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   // MARK: - IBActions
   //========================================================================================
   
-  @IBAction func addCategory(sender: NSButton) {
+  @IBAction func addCategory(_ sender: NSButton) {
     let defaultCategory = BudgetCategoryManager.sharedManager.newCategory()
     self.budgetCategories.append(defaultCategory)
     
     self.tableView.reloadData()
   }
   
-  @IBAction func didChangeCategoryTitle(sender: NSTextField) {
-    let row = self.tableView.rowForView(sender)
+  @IBAction func didChangeCategoryTitle(_ sender: NSTextField) {
+    let row = self.tableView.row(for: sender)
     guard 0 ..< self.budgetCategories.count ~= row,
-          let rowView = self.tableView.rowViewAtRow(row, makeIfNecessary: false) else { return }
+          let rowView = self.tableView.rowView(atRow: row, makeIfNecessary: false) else { return }
     
     let oldTitle = budgetCategories[row].title
     let newTitle = sender.stringValue.capitalizedString
@@ -84,32 +84,32 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     
     // Redraw row
     let range = NSMakeRange(0, rowView.numberOfColumns)
-    let columnIndexSet = NSIndexSet(indexesInRange: range)
-    self.tableView.reloadDataForRowIndexes(NSIndexSet(index: row), columnIndexes: columnIndexSet)
+    let columnIndexSet = IndexSet(integersIn: range.toRange() ?? 0..<0)
+    self.tableView.reloadData(forRowIndexes: IndexSet(integer: row), columnIndexes: columnIndexSet)
   }
   
-  @IBAction func didChangeGoal(sender: NSTextField) {
-    let row = self.tableView.rowForView(sender)
+  @IBAction func didChangeGoal(_ sender: NSTextField) {
+    let row = self.tableView.row(for: sender)
     guard 0 ..< self.budgetCategories.count ~= row,
-          let rowView = self.tableView.rowViewAtRow(row, makeIfNecessary: false),
-          let number = self.numberFormatter.numberFromString(sender.stringValue) else { return }
+          let rowView = self.tableView.rowView(atRow: row, makeIfNecessary: false),
+          let number = self.numberFormatter.number(from: sender.stringValue) else { return }
     
     self.budgetCategories[row].goal = NSDecimalNumber(string: number.stringValue)
     
     // Redraw row
     let range = NSMakeRange(0, rowView.numberOfColumns)
-    let columnIndexSet = NSIndexSet(indexesInRange: range)
-    self.tableView.reloadDataForRowIndexes(NSIndexSet(index: row), columnIndexes: columnIndexSet)
+    let columnIndexSet = IndexSet(integersIn: range.toRange() ?? 0..<0)
+    self.tableView.reloadData(forRowIndexes: IndexSet(integer: row), columnIndexes: columnIndexSet)
   }
   
-  @IBAction func goToToday(sender: AnyObject) {
-    currentComponents = NSCalendar.currentCalendar().components([.Year, .Month], fromDate: NSDate())
+  @IBAction func goToToday(_ sender: AnyObject) {
+    currentComponents = Calendar.current().components([.year, .month], from: Date())
     self.monthDidChange(0)
   }
-  @IBAction func goToPreviousMonth(sender: AnyObject) {
+  @IBAction func goToPreviousMonth(_ sender: AnyObject) {
     self.monthDidChange(-1)
   }
-  @IBAction func goToNextMonth(sender: AnyObject) {
+  @IBAction func goToNextMonth(_ sender: AnyObject) {
     self.monthDidChange(1)
   }
   
@@ -121,7 +121,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   // displayDate()
   //----------------------------------------------------------------------------------------
   func displayDate() {
-    let month = NSDateFormatter().monthSymbols[currentComponents.month - 1]
+    let month = DateFormatter().monthSymbols[currentComponents.month! - 1]
     dateLabel.stringValue = "\(month) \(currentComponents.year)"
   }
   
@@ -129,11 +129,11 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   // updateTransactions()
   //----------------------------------------------------------------------------------------
   func updateTransactions() {
-    let calendar                = NSCalendar.currentCalendar()
+    let calendar                = Calendar.current()
     var unfilteredTransactions  = [Transaction]()
-    AccountManager.sharedManager.allAccounts().forEach({ unfilteredTransactions.appendContentsOf($0.postedTransactions()) })
+    AccountManager.sharedManager.allAccounts().forEach({ unfilteredTransactions.append(contentsOf: $0.postedTransactions()) })
     
-    transactions = unfilteredTransactions.filter({ calendar.components([.Month, .Year], fromDate: $0.datePosted) == currentComponents })
+    transactions = unfilteredTransactions.filter({ calendar.components([.month, .year], from: $0.datePosted as Date) == currentComponents })
   }
   
   //----------------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
       category.addTransaction(transaction)
     }
     
-    budgetCategories = categoryDict.keys.sort().map({ categoryDict[$0]! })
+    budgetCategories = categoryDict.keys.sorted().map({ categoryDict[$0]! })
   }
   
   //----------------------------------------------------------------------------------------
@@ -162,20 +162,20 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   ///  0 = no change
   /// +1 = next month
   /// -1 = previous month
-  func monthDidChange(change: Int) {
+  func monthDidChange(_ change: Int) {
     guard change == 0 || change == 1 || change == -1 else { return }
     
     // Normalize month to 1...12
     if currentComponents.month == 12 && change == 1 {
       currentComponents.month = 1
-      currentComponents.year = currentComponents.year + 1
+      currentComponents.year = currentComponents.year! + 1
     }
     else if currentComponents.month == 1 && change == -1 {
       currentComponents.month = 12
-      currentComponents.year = currentComponents.year - 1
+      currentComponents.year = currentComponents.year! - 1
     }
     else {
-      currentComponents.month = currentComponents.month + change
+      currentComponents.month = currentComponents.month! + change
     }
     
     self.displayDate()
@@ -191,16 +191,16 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   //----------------------------------------------------------------------------------------
   // numberOfRowsInTableView(tableView:) -> Int
   //----------------------------------------------------------------------------------------
-  func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+  func numberOfRows(in tableView: NSTableView) -> Int {
     return tableView == headerTableView ? 1 : budgetCategories.count
   }
   
   //----------------------------------------------------------------------------------------
   // tableView(tableView:viewForTableColumn:row:) -> NSView?
   //----------------------------------------------------------------------------------------
-  func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
+  func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
     guard let columnID  = tableColumn?.identifier,
-          let view      = tableView.makeViewWithIdentifier(columnID, owner: self)
+          let view      = tableView.make(withIdentifier: columnID, owner: self)
           where row < self.budgetCategories.count else { return nil }
 
     let category = self.budgetCategories[row]
@@ -208,13 +208,13 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
     switch (columnID, view) {
     case (CATEGORY, let cell as NSTableCellView):
       cell.textField?.stringValue = category.title
-      cell.textField?.alignment = .Right
+      cell.textField?.alignment = .right
       return cell
       
     case (ACTUAL, let cell as ActualBudgetTableCellView):
       var percent: Float = 0.0
       if category.goal.floatValue != 0 {
-        percent = category.actual.decimalNumberByDividingBy(category.goal).floatValue
+        percent = category.actual.dividing(by: category.goal).floatValue
       } else if category.goal.floatValue == 0 && category.actual.floatValue > 0 {
         percent = 100.0
       }
@@ -222,11 +222,11 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
       return cell
       
     case (GOAL, let cell as NSTableCellView):
-      cell.textField?.stringValue = self.numberFormatter.stringFromNumber(category.goal)!
+      cell.textField?.stringValue = self.numberFormatter.string(from: category.goal)!
       return cell
       
     case (NET, let cell as NSTableCellView):
-      cell.textField?.stringValue = self.numberFormatter.stringFromNumber(category.net)!
+      cell.textField?.stringValue = self.numberFormatter.string(from: category.net)!
       return cell
       
     default:
@@ -239,18 +239,18 @@ class BudgetViewController: NSViewController, NSTableViewDataSource, NSTableView
   //----------------------------------------------------------------------------------------
   /// If the backspace button is pressed when rows are selected, then we
   /// will delete those category objects
-  override func keyDown(theEvent: NSEvent) {
-    guard let key = (theEvent.charactersIgnoringModifiers as NSString?)?.characterAtIndex(0)
+  override func keyDown(_ theEvent: NSEvent) {
+    guard let key = (theEvent.charactersIgnoringModifiers as NSString?)?.character(at: 0)
           where Int(key) == NSDeleteCharacter else {
             return
     }
     
     let selectedIndexes = tableView.selectedRowIndexes
-    selectedIndexes.reverse().forEach { (rowIndex) in
+    selectedIndexes.reversed().forEach { (rowIndex) in
       BudgetCategoryManager.sharedManager.removeCategory(budgetCategories[rowIndex])
-      budgetCategories.removeAtIndex(rowIndex)
+      budgetCategories.remove(at: rowIndex)
     }
     
-    tableView.removeRowsAtIndexes(selectedIndexes, withAnimation: NSTableViewAnimationOptions.EffectFade)
+    tableView.removeRows(at: selectedIndexes, withAnimation: NSTableViewAnimationOptions.effectFade)
   }
 }

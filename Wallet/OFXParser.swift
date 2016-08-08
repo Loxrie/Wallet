@@ -74,15 +74,15 @@ struct OFXParser {
   let contents: String
   
   enum FinancialInstitutionInfo {
-    case Org
+    case org
   }
   
   enum AccountInfo {
-    case AccountNumber, AccountType, Currency, LedgerBalance, AvailableBalance, DateOfBalance
+    case accountNumber, accountType, currency, ledgerBalance, availableBalance, dateOfBalance
   }
   
   enum TransactionInfo {
-    case TransactionType, DatePosted, Amount, UniqueID, CheckNum, Name, Memo
+    case transactionType, datePosted, amount, uniqueID, checkNum, name, memo
   }
   
   //========================================================================================
@@ -93,14 +93,14 @@ struct OFXParser {
   // init?(ofxFile:)
   //----------------------------------------------------------------------------------------
   /// - parameter ofxFile: A NSURL to a file on disk
-  init?(ofxFile: NSURL) {
+  init?(ofxFile: URL) {
     // Check file exists
-    if !NSFileManager.defaultManager().fileExistsAtPath(ofxFile.path!) {
+    if !FileManager.default().fileExists(atPath: ofxFile.path!) {
       return nil
     }
     
     do {
-      self.contents = try String(contentsOfURL: ofxFile, encoding: NSASCIIStringEncoding)
+      self.contents = try String(contentsOfURL: ofxFile, encoding: String.Encoding.ascii)
     } catch {
       return nil
     }
@@ -118,7 +118,7 @@ struct OFXParser {
           let FIOrg   = self.valueOfTag(OFXTags.FIInfo.Org, inString: FIInfo) else { return nil }
     
     return [
-      FinancialInstitutionInfo.Org: FIOrg,
+      FinancialInstitutionInfo.org: FIOrg,
     ]
   }
   
@@ -153,12 +153,12 @@ struct OFXParser {
     let dateOfBal     = balanceTuple.1
     
     return [
-      AccountInfo.Currency:         currency,
-      AccountInfo.AccountNumber:    accountNum,
-      AccountInfo.AccountType:      accountType,
-      AccountInfo.LedgerBalance:    ledgerBalance,
-      AccountInfo.AvailableBalance: availBalance,
-      AccountInfo.DateOfBalance:    dateOfBal
+      AccountInfo.currency:         currency,
+      AccountInfo.accountNumber:    accountNum,
+      AccountInfo.accountType:      accountType,
+      AccountInfo.ledgerBalance:    ledgerBalance,
+      AccountInfo.availableBalance: availBalance,
+      AccountInfo.dateOfBalance:    dateOfBal
     ]
   }
   
@@ -178,12 +178,12 @@ struct OFXParser {
     let dateOfBal     = balanceTuple.1
     
     return [
-      AccountInfo.Currency:         currency,
-      AccountInfo.AccountNumber:    accountNum,
-      AccountInfo.AccountType:      "CREDIT",
-      AccountInfo.LedgerBalance:    ledgerBalance,
-      AccountInfo.AvailableBalance: availBalance,
-      AccountInfo.DateOfBalance:    dateOfBal
+      AccountInfo.currency:         currency,
+      AccountInfo.accountNumber:    accountNum,
+      AccountInfo.accountType:      "CREDIT",
+      AccountInfo.ledgerBalance:    ledgerBalance,
+      AccountInfo.availableBalance: availBalance,
+      AccountInfo.dateOfBalance:    dateOfBal
     ]
   }
   
@@ -198,31 +198,31 @@ struct OFXParser {
       var transaction: [TransactionInfo: String] = [:]
       
       if let type = self.valueOfTag(OFXTags.Transactions.Type, inString: $0) {
-        transaction[TransactionInfo.TransactionType] = type
+        transaction[TransactionInfo.transactionType] = type
       }
       
       if let date = self.valueOfTag(OFXTags.Transactions.DatePosted, inString: $0) {
-        transaction[TransactionInfo.DatePosted] = date
+        transaction[TransactionInfo.datePosted] = date
       }
       
       if let amount = self.valueOfTag(OFXTags.Transactions.Amount, inString: $0) {
-        transaction[TransactionInfo.Amount] = amount
+        transaction[TransactionInfo.amount] = amount
       }
       
       if let ID = self.valueOfTag(OFXTags.Transactions.UniqueID, inString: $0) {
-        transaction[TransactionInfo.UniqueID] = ID
+        transaction[TransactionInfo.uniqueID] = ID
       }
       
       if let name = self.valueOfTag(OFXTags.Transactions.Name, inString: $0) {
-        transaction[TransactionInfo.Name] = name
+        transaction[TransactionInfo.name] = name
       }
       
       if let memo = self.valueOfTag(OFXTags.Transactions.Memo, inString: $0) {
-        transaction[TransactionInfo.Memo] = memo
+        transaction[TransactionInfo.memo] = memo
       }
       
       if let checkNum = self.valueOfTag(OFXTags.Transactions.CheckNumber, inString: $0) {
-        transaction[TransactionInfo.CheckNum] = checkNum
+        transaction[TransactionInfo.checkNum] = checkNum
       }
       
       return transaction
@@ -249,13 +249,13 @@ struct OFXParser {
     
     if var dateAsOf = self.valueOfTag(OFXTags.AvailableBalance.Date , inString: availBalanceBlock) {
       // Some dates have timezone info (ex. [0:GMT]) at the end of the string
-      if let range = dateAsOf.rangeOfString("\\[[0-9]:[A-Z]{3}\\]", options: .RegularExpressionSearch, range: nil, locale: nil) {
-        let stripped  = dateAsOf.substringToIndex(range.startIndex)
+      if let range = dateAsOf.range(of: "\\[[0-9]:[A-Z]{3}\\]", options: .regularExpressionSearch, range: nil, locale: nil) {
+        let stripped  = dateAsOf.substring(to: range.lowerBound)
         dateAsOf      = stripped
       }
       
       // Strip the time, because we really only care about the date
-      balance.1 = dateAsOf.substringToIndex(dateAsOf.startIndex.advancedBy(8))
+      balance.1 = dateAsOf.substring(to: dateAsOf.index(dateAsOf.startIndex, offsetBy: 8))
     }
     
     return balance
@@ -282,16 +282,16 @@ struct OFXParser {
   //----------------------------------------------------------------------------------------
   // blocksWithTag(tag:String, inString string:String) -> [String]?
   //----------------------------------------------------------------------------------------
-  private func blocksWithTag(tag:String, inString string:String) -> [String]? {
+  private func blocksWithTag(_ tag:String, inString string:String) -> [String]? {
     do {
       let pattern = "<\(tag)>(.+?)</\(tag)>"
-      let regex   = try NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions.DotMatchesLineSeparators)
+      let regex   = try RegularExpression(pattern: pattern, options: RegularExpression.Options.dotMatchesLineSeparators)
       
       let range   = NSMakeRange(0, string.characters.count)
-      let matches = regex.matchesInString(string, options: [], range: range)
+      let matches = regex.matches(in: string, options: [], range: range)
       
       return matches.map {
-        return (string as NSString).substringWithRange($0.range)
+        return (string as NSString).substring(with: $0.range)
       }
     } catch {
       return nil
@@ -301,19 +301,19 @@ struct OFXParser {
   //----------------------------------------------------------------------------------------
   // valueOfTag(tag:String, inString string:String) -> String?
   //----------------------------------------------------------------------------------------
-  func valueOfTag(tag:String, inString string:String) -> String? {
-    guard let matchRange  = string.rangeOfString("<\(tag)>.+", options: .RegularExpressionSearch, range: nil, locale: nil) else { return nil }
+  func valueOfTag(_ tag:String, inString string:String) -> String? {
+    guard let matchRange  = string.range(of: "<\(tag)>.+", options: .regularExpressionSearch, range: nil, locale: nil) else { return nil }
     
     // If there is a closing tag, don't count it
-    var endIndex = matchRange.endIndex
-    if let closingTagMatch = string.rangeOfString("</\(tag)>", options: .RegularExpressionSearch, range: nil, locale: nil) {
-      endIndex = closingTagMatch.startIndex
+    var endIndex = matchRange.upperBound
+    if let closingTagMatch = string.range(of: "</\(tag)>", options: .regularExpressionSearch, range: nil, locale: nil) {
+      endIndex = closingTagMatch.lowerBound
     }
     
     let tagLength   = "<\(tag)>".characters.count
-    let stringRange = matchRange.startIndex.advancedBy(tagLength) ..< endIndex
+    let stringRange = matchRange.index(matchRange.startIndex, offsetBy: tagLength) ..< endIndex
     
-    return string.substringWithRange(stringRange)
+    return string.substring(with: stringRange)
   }
   
 }

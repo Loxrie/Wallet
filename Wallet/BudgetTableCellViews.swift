@@ -19,13 +19,13 @@ class ActualBudgetTableCellView: NSTableCellView {
   required init?(coder: NSCoder) {
     super.init(coder: coder)
 
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "windowDidResize:", name: NSWindowDidResizeNotification, object: nil)
+    NotificationCenter.default().addObserver(self, selector: "windowDidResize:", name: NSNotification.Name.NSWindowDidResize, object: nil)
   }
 
   //----------------------------------------------------------------------------------------
   // windowDidResize:
   //----------------------------------------------------------------------------------------
-  func windowDidResize(sender: NSNotification) {
+  func windowDidResize(_ sender: Notification) {
     actualBudgetView.updatePercent(percentFull)
     actualBudgetView.drawTopView()
   }
@@ -33,7 +33,7 @@ class ActualBudgetTableCellView: NSTableCellView {
   //----------------------------------------------------------------------------------------
   // updatePercentFull:
   //----------------------------------------------------------------------------------------
-  func updatePercentFull(percent: CGFloat, withAmount: NSDecimalNumber) {
+  func updatePercentFull(_ percent: CGFloat, withAmount: NSDecimalNumber) {
     percentFull = percent
     actualBudgetView.updatePercent(percent, withAmount: withAmount)
     actualBudgetView.animateTopView()
@@ -42,11 +42,11 @@ class ActualBudgetTableCellView: NSTableCellView {
 
 class ActualBudgetView: NSView {
   
-  private let grayColor   = NSColor(white: 0.60, alpha: 1.0).CGColor
-  private let redColor    = NSColor(red: 1.00, green: 0.38, blue: 0.35, alpha: 1.0).CGColor
-  private let blueColor   = NSColor(red: 0.60, green: 0.75, blue: 0.92, alpha: 1.0).CGColor
-  private let greenColor  = NSColor(red: 0.16, green: 0.82, blue: 0.26, alpha: 1.0).CGColor
-  private let yellowColor = NSColor(red: 1.00, green: 0.76, blue: 0.18, alpha: 1.0).CGColor
+  private let grayColor   = NSColor(white: 0.60, alpha: 1.0).cgColor
+  private let redColor    = NSColor(red: 1.00, green: 0.38, blue: 0.35, alpha: 1.0).cgColor
+  private let blueColor   = NSColor(red: 0.60, green: 0.75, blue: 0.92, alpha: 1.0).cgColor
+  private let greenColor  = NSColor(red: 0.16, green: 0.82, blue: 0.26, alpha: 1.0).cgColor
+  private let yellowColor = NSColor(red: 1.00, green: 0.76, blue: 0.18, alpha: 1.0).cgColor
   private var percent     = CGFloat(0)
   
   @IBOutlet var view: NSView!
@@ -60,18 +60,18 @@ class ActualBudgetView: NSView {
   required init?(coder: NSCoder) {
     super.init(coder: coder)
     
-    NSBundle.mainBundle().loadNibNamed("ActualBudgetView", owner: self, topLevelObjects: nil)
+    Bundle.main().loadNibNamed("ActualBudgetView", owner: self, topLevelObjects: nil)
     self.addSubview(view)
     
     // Set contraints
     view.translatesAutoresizingMaskIntoConstraints = false
     let views = ["view": view]
     
-    let horzContraint = NSLayoutConstraint.constraintsWithVisualFormat("H:|[view]|", options: [], metrics: nil, views: views)
-    let vertContraint = NSLayoutConstraint.constraintsWithVisualFormat("V:|[view]|", options: [], metrics: nil, views: views)
+    let horzContraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|[view]|", options: [], metrics: nil, views: views)
+    let vertContraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: views)
     
-    NSLayoutConstraint.activateConstraints(horzContraint)
-    NSLayoutConstraint.activateConstraints(vertContraint)
+    NSLayoutConstraint.activate(horzContraint)
+    NSLayoutConstraint.activate(vertContraint)
   }
   
   //----------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ class ActualBudgetView: NSView {
     
     // background color
     let layer = CALayer()
-    layer.backgroundColor = NSColor(white: 0.9, alpha: 1.0).CGColor
+    layer.backgroundColor = NSColor(white: 0.9, alpha: 1.0).cgColor
     layer.cornerRadius = self.frame.size.height * 0.14
     view.wantsLayer = true
     view.layer = layer
@@ -95,8 +95,8 @@ class ActualBudgetView: NSView {
     topView.layer = topLayer
   }
   
-  override func drawRect(dirtyRect: NSRect) {
-    super.drawRect(dirtyRect)
+  override func draw(_ dirtyRect: NSRect) {
+    super.draw(dirtyRect)
     
     self.drawTopView()
   }
@@ -146,15 +146,15 @@ class ActualBudgetView: NSView {
   //----------------------------------------------------------------------------------------
   // updatePercent:
   //----------------------------------------------------------------------------------------
-  func updatePercent(percent: CGFloat, withAmount: NSDecimalNumber? = nil) {
+  func updatePercent(_ percent: CGFloat, withAmount: NSDecimalNumber? = nil) {
     self.percent = percent >= 1.0 ? 1.0 : percent
     
     if let amount = withAmount {
-      let numberFormatter           = NSNumberFormatter()
+      let numberFormatter           = NumberFormatter()
       let currencyCodeKey           = AppDelegate.UserDefaultKeys.CurrencyCode
-      numberFormatter.currencyCode  = NSUserDefaults.standardUserDefaults().stringForKey(currencyCodeKey)!
-      numberFormatter.numberStyle   = .CurrencyAccountingStyle
-      amountLabel.stringValue       = numberFormatter.stringFromNumber(amount)!
+      numberFormatter.currencyCode  = UserDefaults.standard().string(forKey: currencyCodeKey)!
+      numberFormatter.numberStyle   = .currencyAccounting
+      amountLabel.stringValue       = numberFormatter.string(from: amount)!
     }
   }
 }

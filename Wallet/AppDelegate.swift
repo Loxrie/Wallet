@@ -17,26 +17,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   //----------------------------------------------------------------------------------------
   // applicationWillFinishLaunching(notification:
   //----------------------------------------------------------------------------------------
-  func applicationWillFinishLaunching(notification: NSNotification) {
-    let currencyCode = NSUserDefaults.standardUserDefaults().stringForKey(UserDefaultKeys.CurrencyCode)
+  func applicationWillFinishLaunching(_ notification: Notification) {
+    let currencyCode = UserDefaults.standard().string(forKey: UserDefaultKeys.CurrencyCode)
     if currencyCode == nil {
-      let currencyCode = NSLocale.currentLocale().valueForKey(NSLocaleCurrencyCode)
-      NSUserDefaults.standardUserDefaults().setValue(currencyCode, forKey: UserDefaultKeys.CurrencyCode)
-      NSUserDefaults.standardUserDefaults().synchronize()
+      let currencyCode = Locale.current().value(forKey: Locale.Key.currencyCode.rawValue)
+      UserDefaults.standard().setValue(currencyCode, forKey: UserDefaultKeys.CurrencyCode)
+      UserDefaults.standard().synchronize()
     }
   }
   
   //----------------------------------------------------------------------------------------
   // applicationWillTerminate(notification:)
   //----------------------------------------------------------------------------------------
-  func applicationWillTerminate(notification: NSNotification) {
+  func applicationWillTerminate(_ notification: Notification) {
     self.save(self)
   }
   
   //----------------------------------------------------------------------------------------
   // save()
   //----------------------------------------------------------------------------------------
-  @IBAction func save(sender: AnyObject) {
+  @IBAction func save(_ sender: AnyObject) {
     AccountManager.sharedManager.save()
     BudgetCategoryManager.sharedManager.save()
   }

@@ -12,7 +12,7 @@ import Cocoa
 // MARK: - SourceListViewControllerDelegate
 //========================================================================================
 protocol SourceListViewControllerDelegate {
-  func displayViewController(viewController: NSViewController)
+  func displayViewController(_ viewController: NSViewController)
 }
 
 
@@ -38,7 +38,7 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:numberOfChildrenOfItem:) -> Int
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
+  func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
     guard let sourceItem = item as? SourceListItem else { return self.sourceItems.count }
     
     return sourceItem.children.count
@@ -47,7 +47,7 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:isItemExpandable:) -> Bool
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
+  func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
     guard let sourceItem = item as? SourceListItem else { return false }
     
     return sourceItem.hasChildren()
@@ -56,7 +56,7 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:child:ofItem:) -> AnyObject
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
+  func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
     guard let sourceItem = item as? SourceListItem else { return self.sourceItems[index] }
     
     return sourceItem.children[index]
@@ -65,7 +65,7 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:objectValueForTableColumn:byItem:) -> AnyObject?
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
+  func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
     guard let sourceItem = item as? SourceListItem else { return nil }
     
     return sourceItem
@@ -74,14 +74,14 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:shouldEditTableColumn:item:) -> Bool
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, shouldEditTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> Bool {
+  func outlineView(_ outlineView: NSOutlineView, shouldEditTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> Bool {
     return false
   }
   
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:isGroupItem:) -> Bool
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, isGroupItem item: AnyObject) -> Bool {
+  func outlineView(_ outlineView: NSOutlineView, isGroupItem item: AnyObject) -> Bool {
     guard let sourceItem = item as? SourceListItem else { return false }
     
     return sourceItem.isGroupItem
@@ -90,7 +90,7 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:shouldSelectItem:) -> Bool
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, shouldSelectItem item: AnyObject) -> Bool {
+  func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: AnyObject) -> Bool {
     guard let sourceItem = item as? SourceListItem else { return false }
     
     return sourceItem.isSelectable
@@ -99,16 +99,16 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineView(outlineView:viewForTableColumn:item:) -> NSView?
   //----------------------------------------------------------------------------------------
-  func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
+  func outlineView(_ outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
     guard let sourceItem = item as? SourceListItem else { return nil }
     
     if sourceItem.isGroupItem {
-      let cell = outlineView.makeViewWithIdentifier("HeaderCell", owner: self) as? HeaderCellView
-      cell?.titleLabel.stringValue    = sourceItem.title.uppercaseString
+      let cell = outlineView.make(withIdentifier: "HeaderCell", owner: self) as? HeaderCellView
+      cell?.titleLabel.stringValue    = sourceItem.title.uppercased()
       cell?.subtitleLabel.stringValue = sourceItem.subtitle
       return cell
     } else {
-      let cell = outlineView.makeViewWithIdentifier("DataCell", owner: self) as? DataCellView
+      let cell = outlineView.make(withIdentifier: "DataCell", owner: self) as? DataCellView
       cell?.titleLabel.stringValue    = sourceItem.title
       cell?.subtitleLabel.stringValue = sourceItem.subtitle
       return cell
@@ -118,9 +118,9 @@ class SourceListViewController: NSViewController, NSOutlineViewDataSource {
   //----------------------------------------------------------------------------------------
   // outlineViewSelectionDidChange(notification:)
   //----------------------------------------------------------------------------------------
-  func outlineViewSelectionDidChange(notification: NSNotification) {
+  func outlineViewSelectionDidChange(_ notification: Notification) {
     let index = self.outlineView.selectedRow
-    guard let item  = self.outlineView.itemAtRow(index) as? SourceListItem else { return }
+    guard let item  = self.outlineView.item(atRow: index) as? SourceListItem else { return }
     
     if let content = item.viewController {
       self.delegate?.displayViewController(content)

@@ -12,7 +12,7 @@ import Cocoa
 // MARK: - CategoryTableViewCellDelegate
 //========================================================================================
 protocol CategoryTableViewCellDelegate {
-  func categoryCell(cell: CategoryTableViewCell, didChangeSelectionTo newSelection: String)
+  func categoryCell(_ cell: CategoryTableViewCell, didChangeSelectionTo newSelection: String)
 }
 
 //========================================================================================
@@ -34,7 +34,7 @@ class CategoryTableViewCell: NSTableCellView, NSMenuDelegate {
 //  }
   
 
-  @IBAction func categorySelectionDidChange(sender: NSPopUpButton) {
+  @IBAction func categorySelectionDidChange(_ sender: NSPopUpButton) {
     delegate?.categoryCell(self, didChangeSelectionTo: sender.title)
     currentCategory = sender.title
   }
@@ -47,7 +47,7 @@ class CategoryTableViewCell: NSTableCellView, NSMenuDelegate {
   //----------------------------------------------------------------------------------------
   // menu(menu:willHighlightItem:)
   //----------------------------------------------------------------------------------------
-  func menu(menu: NSMenu, willHighlightItem item: NSMenuItem?) {
+  func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
 //    guard let newItem = item else { return }
 //    
 //    let categoryIndex = menu.indexOfItem(newItem)
